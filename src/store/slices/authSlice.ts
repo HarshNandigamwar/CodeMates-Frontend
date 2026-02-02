@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "@/lib/axios";
 
-// User ka structure
+// User structure
 interface User {
   _id: string;
   username: string;
@@ -29,7 +29,23 @@ const initialState: AuthState = {
   error: null,
 };
 
-// Login user
+// 1. Signup user thunk
+export const signupUser = createAsyncThunk<User, any, { rejectValue: string }>(
+  "auth/signup",
+  async (userData, thunkAPI) => {
+    try {
+      const response = await axiosInstance.post("/auth/signup", userData);
+      localStorage.setItem("token", response.data.token);
+      return response.data.user;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Signup failed"
+      );
+    }
+  }
+);
+
+// 2. Login user thunk
 export const loginUser = createAsyncThunk<User, any, { rejectValue: string }>(
   "auth/login",
   async (userData, thunkAPI) => {
@@ -44,6 +60,20 @@ export const loginUser = createAsyncThunk<User, any, { rejectValue: string }>(
     }
   }
 );
+
+// 3. Check Auth thunk (Token verification)
+export const checkAuth = createAsyncThunk<User, void, { rejectValue: string }>(
+  "auth/checkAuth",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get("/auth/check");
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue("Session expired");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -60,6 +90,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Login Cases
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
       })
@@ -71,23 +102,36 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      // Signup Cases
+      .addCase(signupUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(signupUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(signupUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // Check Auth Cases
+      .addCase(checkAuth.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.isAuthenticated = true;
+        state.loading = false;
+      })
+      .addCase(checkAuth.rejected, (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.loading = false;
       });
   },
 });
-
-// Signup user
-export const signupUser = createAsyncThunk<User, any, { rejectValue: string }>(
-  "auth/signup",
-  async (userData, thunkAPI) => {
-    try {
-      const response = await axiosInstance.post("/auth/signup", userData);
-      localStorage.setItem("token", response.data.token);
-      return response.data.user;
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.response?.data?.message || "Signup failed");
-    }
-  }
-);
 
 export const { logout, setAuth } = authSlice.actions;
 export default authSlice.reducer;

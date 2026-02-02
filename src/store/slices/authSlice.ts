@@ -29,7 +29,7 @@ const initialState: AuthState = {
   error: null,
 };
 
-// Async thunk with types
+// Login user
 export const loginUser = createAsyncThunk<User, any, { rejectValue: string }>(
   "auth/login",
   async (userData, thunkAPI) => {
@@ -44,7 +44,6 @@ export const loginUser = createAsyncThunk<User, any, { rejectValue: string }>(
     }
   }
 );
-
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -75,6 +74,20 @@ const authSlice = createSlice({
       });
   },
 });
+
+// Signup user
+export const signupUser = createAsyncThunk<User, any, { rejectValue: string }>(
+  "auth/signup",
+  async (userData, thunkAPI) => {
+    try {
+      const response = await axiosInstance.post("/auth/signup", userData);
+      localStorage.setItem("token", response.data.token);
+      return response.data.user;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Signup failed");
+    }
+  }
+);
 
 export const { logout, setAuth } = authSlice.actions;
 export default authSlice.reducer;

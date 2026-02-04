@@ -19,7 +19,7 @@ import axiosInstance from "@/lib/axios";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, user } = useSelector(
+  const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );
   const dispatch = useDispatch();
@@ -40,7 +40,7 @@ export default function Navbar() {
     { name: "Create", href: "/create", icon: <PlusSquare size={20} /> },
     {
       name: "Profile",
-      href: `/profile/${user?._id}`,
+      href: user?.username ? `/profile/${user.username}` : "#",
       icon: <User size={20} />,
     },
   ];

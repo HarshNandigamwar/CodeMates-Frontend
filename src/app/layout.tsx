@@ -1,4 +1,8 @@
-import type { Metadata } from "next";
+"use client";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setAuth } from "@/store/slices/authSlice";
+import axiosInstance from "@/lib/axios";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
@@ -15,9 +19,20 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "CodeMates | Connect with Developers",
-  description: "Social media for developers",
+const CheckAuth = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axiosInstance.get("/auth/me");
+        dispatch(setAuth(res.data));
+      } catch (err) {
+        console.log("No active session found");
+      }
+    };
+    fetchUser();
+  }, [dispatch]);
+  return null;
 };
 
 export default function RootLayout({
@@ -31,8 +46,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          <CheckAuth />
           <Navbar />
-          {children}
+          <main className="pt-16">{children}</main>
           <Toaster theme="dark" richColors />
         </Providers>
       </body>

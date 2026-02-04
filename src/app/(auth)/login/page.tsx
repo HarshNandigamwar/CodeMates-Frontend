@@ -1,114 +1,108 @@
 "use client";
-
-import React, { useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { loginUser } from "@/store/slices/authSlice";
-import { useRouter } from "next/navigation";
-import { Mail, Lock, Loader2, Code2 } from "lucide-react";
+import { useState } from "react";
+import axiosInstance from "@/lib/axios";
+import { useDispatch } from "react-redux";
+import { setAuth } from "@/store/slices/authSlice";
 import { toast } from "sonner";
+import { LogIn, Mail, Lock } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const dispatch = useAppDispatch();
-  const router = useRouter();
-  const { loading } = useAppSelector((state) => state.auth);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await dispatch(loginUser(formData));
-
-    if (loginUser.fulfilled.match(result)) {
-      toast.success("Welcome back, Coder!");
-      router.push("/");
-    } else {
-      toast.error((result.payload as string) || "Login failed");
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("/auth/login", { email, password });
+      dispatch(setAuth(res.data)); 
+      toast.success("Welcome back to CodeMates!");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4">
-      {/* Background Glow Effect */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-900/20 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full" />
-      </div>
-
-      <div className="max-w-md w-full space-y-8 bg-[#121212] p-8 rounded-2xl shadow-2xl border border-white/5 relative z-10">
+    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] px-4 sm:px-6 lg:px-8">
+      {/* Main Container: Mobile me full width, Tablet/PC me limited width */}
+      <div className="w-full max-w-md space-y-8 bg-[#111111] p-6 sm:p-10 rounded-2xl border border-zinc-800 shadow-2xl">
+        
+        {/* Logo & Header */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
-            <Code2 className="h-8 w-8 text-emerald-500" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+            <LogIn className="h-6 w-6 text-accent" />
           </div>
-          <h2 className="text-3xl font-extrabold text-white tracking-tight">
-            Welcome to <span className="text-emerald-500">CodeMates</span>
+          <h2 className="mt-6 text-3xl font-extrabold text-white tracking-tight">
+            Login to <span className="text-accent">CodeMates</span>
           </h2>
-          <p className="mt-2 text-gray-400">
-            Sync your code, share your logic.
+          <p className="mt-2 text-sm text-zinc-400">
+            Welcome back! Please enter your details.
           </p>
         </div>
 
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+        {/* Form */}
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="space-y-4">
             {/* Email Input */}
-            <div className="relative group">
-              <Mail className="absolute left-3 top-3.5 text-gray-500 group-focus-within:text-emerald-500 transition-colors h-5 w-5" />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Mail className="h-5 w-5 text-zinc-500" />
+              </div>
               <input
                 type="email"
                 required
-                className="pl-11 w-full p-3.5 bg-[#1a1a1a] border border-white/10 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 outline-none text-white transition-all placeholder:text-gray-600"
-                placeholder="developer@codemates.com"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
+                className="block w-full pl-10 pr-3 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all sm:text-sm"
+                placeholder="Email address"
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             {/* Password Input */}
-            <div className="relative group">
-              <Lock className="absolute left-3 top-3.5 text-gray-500 group-focus-within:text-emerald-500 transition-colors h-5 w-5" />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Lock className="h-5 w-5 text-zinc-500" />
+              </div>
               <input
                 type="password"
                 required
-                className="pl-11 w-full p-3.5 bg-[#1a1a1a] border border-white/10 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 outline-none text-white transition-all placeholder:text-gray-600"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
+                className="block w-full pl-10 pr-3 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all sm:text-sm"
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end">
-            <Link
-              href="#"
-              className="text-sm text-emerald-500 hover:text-emerald-400 font-medium"
-            >
-              Forgot Password?
-            </Link>
+          {/* Remember & Forgot Password (Desktop me Row, Mobile me Column) */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
+            <div className="flex items-center">
+              <input type="checkbox" className="h-4 w-4 rounded border-zinc-800 bg-zinc-900 text-accent focus:ring-accent" />
+              <label className="ml-2 block text-sm text-zinc-400">Remember me</label>
+            </div>
+            <div className="text-sm">
+              <a href="#" className="font-medium text-accent hover:text-accent-hover">Forgot password?</a>
+            </div>
           </div>
 
+          {/* Submit Button */}
           <button
-            type="submit"
             disabled={loading}
-            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+            type="submit"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-black bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-all active:scale-95 disabled:opacity-50"
           >
-            {loading ? (
-              <Loader2 className="animate-spin h-5 w-5" />
-            ) : (
-              "Initialize Session"
-            )}
+            {loading ? "Verifying..." : "Sign In"}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-400">
-          New to the terminal?{" "}
-          <Link
-            href="/signup"
-            className="text-emerald-500 hover:underline font-bold"
-          >
-            Create Account
+        {/* Footer */}
+        <p className="mt-6 text-center text-sm text-zinc-500">
+          Don't have an account?{" "}
+          <Link href="/signup" className="font-semibold text-accent hover:underline">
+            Sign up for free
           </Link>
         </p>
       </div>

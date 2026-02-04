@@ -1,28 +1,25 @@
 "use client";
-
-import React, { useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { signupUser } from "@/store/slices/authSlice";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import axiosInstance from "@/lib/axios";
+import { useDispatch } from "react-redux";
+import { setAuth } from "@/store/slices/authSlice";
+import { toast } from "sonner";
 import {
+  User,
   Mail,
   Lock,
-  Loader2,
-  Code2,
-  User,
-  AtSign,
   Github,
-  Globe,
   Linkedin,
-  Terminal,
+  Globe,
+  Code,
   ArrowRight,
   ArrowLeft,
+  Check,
 } from "lucide-react";
-import { toast } from "sonner";
 import Link from "next/link";
 
 export default function SignupPage() {
-  const [step, setStep] = useState(1); // Step tracker
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -34,204 +31,191 @@ export default function SignupPage() {
     linkedin: "",
     techstack: "",
   });
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
-  const dispatch = useAppDispatch();
-  const router = useRouter();
-  const { loading } = useAppSelector((state) => state.auth);
-
-  const nextStep = () => {
-    if (
-      step === 1 &&
-      (!formData.username ||
-        !formData.email ||
-        !formData.password ||
-        !formData.name)
-    ) {
-      return toast.error("Please fill all required credentials");
-    }
-    setStep(2);
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const prevStep = () => setStep(1);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await dispatch(signupUser(formData));
-
-    if (signupUser.fulfilled.match(result)) {
-      toast.success("Deployment Successful! Welcome.");
-      router.push("/");
-    } else {
-      toast.error((result.payload as string) || "Signup failed");
+    setLoading(true);
+    try {
+      const res = await axiosInstance.post("/auth/signup", formData);
+      dispatch(setAuth(res.data));
+      toast.success("Account created successfully!");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 py-10 relative">
-      {/* Glow effect */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full" />
-
-      <div className="max-w-md w-full space-y-8 bg-[#121212] p-8 rounded-2xl shadow-2xl border border-white/5 relative z-10">
+    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] px-4 py-10">
+      <div className="w-full max-w-2xl bg-[#111111] p-6 sm:p-10 rounded-2xl border border-zinc-800 shadow-2xl">
         {/* Progress Bar */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center justify-between mb-8 px-10">
           <div
-            className={`h-1 w-full rounded-full ${
-              step >= 1 ? "bg-emerald-500" : "bg-gray-800"
-            } transition-all`}
-          />
-          <div className="mx-2 text-xs font-mono text-gray-500">
-            STEP_0{step}
+            className={`h-2 flex-1 rounded-full ${
+              step >= 1 ? "bg-accent" : "bg-zinc-800"
+            }`}
+          ></div>
+          <div className="mx-4 text-accent font-bold text-sm">
+            Step {step} of 2
           </div>
           <div
-            className={`h-1 w-full rounded-full ${
-              step === 2 ? "bg-emerald-500" : "bg-gray-800"
-            } transition-all`}
-          />
+            className={`h-2 flex-1 rounded-full ${
+              step === 2 ? "bg-accent" : "bg-zinc-800"
+            }`}
+          ></div>
         </div>
 
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
-            <Code2 className="h-6 w-6 text-emerald-500" />
-          </div>
-          <h2 className="text-2xl font-bold text-white">
-            {step === 1 ? "Initialize Profile" : "Developer Config"}
-          </h2>
-          <p className="text-gray-400 text-sm mt-1">
-            {step === 1
-              ? "Start by setting up your basic credentials."
-              : "Tell us more about your stack."}
-          </p>
-        </div>
-
-        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
-          {step === 1 ? (
-            /* PAGE 1: CREDENTIALS */
-            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="relative group">
-                <User className="absolute left-3 top-3.5 text-gray-500 group-focus-within:text-emerald-500 h-5 w-5 transition-colors" />
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  className="pl-11 w-full p-3.5 bg-[#1a1a1a] border border-white/10 rounded-xl focus:border-emerald-500 outline-none text-white transition-all"
+        <form onSubmit={handleSignup} className="space-y-6">
+          {/* STEP 1: Basic Information */}
+          {step === 1 && (
+            <div className="space-y-4 animate-in fade-in duration-500">
+              <h2 className="text-2xl font-bold text-white">
+                Basic <span className="text-accent">Details</span>
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputIcon
+                  icon={<User size={18} />}
+                  name="name"
                   placeholder="Full Name"
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                />
-              </div>
-              <div className="relative group">
-                <AtSign className="absolute left-3 top-3.5 text-gray-500 group-focus-within:text-emerald-500 h-5 w-5 transition-colors" />
-                <input
-                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
                   required
+                />
+                <InputIcon
+                  icon={<User size={18} />}
+                  name="username"
+                  placeholder="Username"
                   value={formData.username}
-                  className="pl-11 w-full p-3.5 bg-[#1a1a1a] border border-white/10 rounded-xl focus:border-emerald-500 outline-none text-white transition-all"
-                  placeholder="username"
-                  onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                  }
+                  onChange={handleChange}
+                  required
                 />
-              </div>
-              <div className="relative group">
-                <Mail className="absolute left-3 top-3.5 text-gray-500 group-focus-within:text-emerald-500 h-5 w-5 transition-colors" />
-                <input
+                <InputIcon
+                  icon={<Mail size={18} />}
+                  name="email"
                   type="email"
-                  required
+                  placeholder="Email"
                   value={formData.email}
-                  className="pl-11 w-full p-3.5 bg-[#1a1a1a] border border-white/10 rounded-xl focus:border-emerald-500 outline-none text-white transition-all"
-                  placeholder="email@codemates.com"
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                />
-              </div>
-              <div className="relative group">
-                <Lock className="absolute left-3 top-3.5 text-gray-500 group-focus-within:text-emerald-500 h-5 w-5 transition-colors" />
-                <input
-                  type="password"
+                  onChange={handleChange}
                   required
+                />
+                <InputIcon
+                  icon={<Lock size={18} />}
+                  name="password"
+                  type="password"
+                  placeholder="Password"
                   value={formData.password}
-                  className="pl-11 w-full p-3.5 bg-[#1a1a1a] border border-white/10 rounded-xl focus:border-emerald-500 outline-none text-white transition-all"
-                  placeholder="password"
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={nextStep}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-xl font-bold flex justify-center items-center gap-2 transition-all mt-6"
-              >
-                Next Step <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          ) : (
-            /* PAGE 2: DEVELOPER INFO */
-            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="relative group">
-                <Github className="absolute left-3 top-3.5 text-gray-500 group-focus-within:text-emerald-500 h-5 w-5 transition-colors" />
-                <input
-                  type="text"
-                  className="pl-11 w-full p-3.5 bg-[#1a1a1a] border border-white/10 rounded-xl focus:border-emerald-500 outline-none text-white transition-all"
-                  placeholder="GitHub URL"
-                  onChange={(e) =>
-                    setFormData({ ...formData, github: e.target.value })
-                  }
-                />
-              </div>
-              <div className="relative group">
-                <Terminal className="absolute left-3 top-3.5 text-gray-500 group-focus-within:text-emerald-500 h-5 w-5 transition-colors" />
-                <input
-                  type="text"
-                  className="pl-11 w-full p-3.5 bg-[#1a1a1a] border border-white/10 rounded-xl focus:border-emerald-500 outline-none text-white transition-all"
-                  placeholder="Stack (e.g. MERN, Python)"
-                  onChange={(e) =>
-                    setFormData({ ...formData, techstack: e.target.value })
-                  }
+                  onChange={handleChange}
+                  required
                 />
               </div>
               <textarea
-                className="w-full p-3.5 bg-[#1a1a1a] border border-white/10 rounded-xl focus:border-emerald-500 outline-none text-white transition-all h-24 resize-none"
-                placeholder="Short bio about yourself..."
-                onChange={(e) =>
-                  setFormData({ ...formData, bio: e.target.value })
-                }
+                name="bio"
+                placeholder="Write a short bio..."
+                className="w-full p-3 h-24 bg-zinc-900 border border-zinc-800 rounded-xl text-white focus:border-accent outline-none transition-all"
+                onChange={handleChange}
+                value={formData.bio}
               />
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-full flex justify-center items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold py-3 rounded-xl transition-all"
+              >
+                Next Step <ArrowRight size={18} />
+              </button>
+            </div>
+          )}
 
-              <div className="flex gap-3">
+          {/* STEP 2: Professional & Tech Info */}
+          {step === 2 && (
+            <div className="space-y-4 animate-in slide-in-from-right duration-500">
+              <h2 className="text-2xl font-bold text-white">
+                Professional <span className="text-accent">Links</span>
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputIcon
+                  icon={<Github size={18} />}
+                  name="github"
+                  placeholder="Github URL"
+                  value={formData.github}
+                  onChange={handleChange}
+                />
+                <InputIcon
+                  icon={<Linkedin size={18} />}
+                  name="linkedin"
+                  placeholder="LinkedIn URL"
+                  value={formData.linkedin}
+                  onChange={handleChange}
+                />
+                <InputIcon
+                  icon={<Globe size={18} />}
+                  name="portfolio"
+                  placeholder="Portfolio URL"
+                  value={formData.portfolio}
+                  onChange={handleChange}
+                />
+                <InputIcon
+                  icon={<Code size={18} />}
+                  name="techstack"
+                  placeholder="Tech Stack (cpp, nodejs, etc.)"
+                  value={formData.techstack}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex gap-4">
                 <button
                   type="button"
-                  onClick={prevStep}
-                  className="w-1/3 bg-white/5 hover:bg-white/10 text-white p-3.5 rounded-xl font-bold border border-white/10 transition-all flex justify-center items-center gap-2"
+                  onClick={() => setStep(1)}
+                  className="flex-1 flex justify-center items-center gap-2 border border-zinc-700 text-white hover:bg-zinc-800 font-bold py-3 rounded-xl transition-all"
                 >
-                  <ArrowLeft className="h-4 w-4" /> Back
+                  <ArrowLeft size={18} /> Back
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-2/3 bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-xl font-bold transition-all disabled:opacity-50 flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                  className="flex-[2] flex justify-center items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold py-3 rounded-xl transition-all"
                 >
-                  {loading ? (
-                    <Loader2 className="animate-spin h-5 w-5" />
-                  ) : (
-                    "Deploy Account"
-                  )}
+                  {loading ? "Creating Account..." : "Complete Signup"}{" "}
+                  <Check size={18} />
                 </button>
               </div>
             </div>
           )}
         </form>
 
-        <p className="text-center text-xs text-gray-500 mt-6">
-          Already verified?{" "}
-          <Link href="/login" className="text-emerald-500 hover:underline">
-            Access Terminal
+        <p className="mt-8 text-center text-sm text-zinc-500">
+          Already a member?{" "}
+          <Link
+            href="/login"
+            className="text-accent font-semibold hover:underline"
+          >
+            Login here
           </Link>
         </p>
       </div>
+    </div>
+  );
+}
+
+// Reusable Input Component for clean code
+function InputIcon({ icon, ...props }: any) {
+  return (
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-500">
+        {icon}
+      </div>
+      <input
+        {...props}
+        className="block w-full pl-10 pr-3 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-accent transition-all sm:text-sm"
+      />
     </div>
   );
 }

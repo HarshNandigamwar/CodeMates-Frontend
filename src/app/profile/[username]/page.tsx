@@ -6,9 +6,7 @@ import {
   Github,
   Linkedin,
   Globe,
-  MapPin,
   Calendar,
-  Users,
   Edit3,
   Code2,
   Layers,
@@ -16,6 +14,7 @@ import {
 import AuthWrapper from "@/components/AuthWrapper";
 import { toast } from "sonner";
 import PostCard from "@/components/PostCard";
+import ProfilePageLoader from "@/components/SkeletonLoders/ProfilePageLoader";
 
 export default function ProfilePage() {
   const { username } = useParams();
@@ -44,22 +43,23 @@ export default function ProfilePage() {
 
   if (loading)
     return (
-      <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
-        <div className="h-10 w-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <>
+        <ProfilePageLoader />
+      </>
     );
 
   if (!data)
-    return <div className="text-white text-center mt-20">User not found!</div>;
+    return (
+      <div className="flex items-center justify-center text-accent font-bold font-mono mt-56 text-center text-2xl md:text-4xl">
+        User not found!
+      </div>
+    );
 
   const { user, posts } = data;
 
   return (
     <AuthWrapper>
       <div className="min-h-screen bg-[#0a0a0a] text-white pb-20">
-        {/* Header/Cover Section */}
-        {/* <div className="h-48 md:h-64 bg-gradient-to-r from-zinc-900 via-accent/10 to-zinc-900 border-b border-zinc-800"></div> */}
-
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative -mt-24 flex flex-col md:flex-row md:items-end md:gap-6">
             {/* Profile Picture */}

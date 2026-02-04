@@ -8,6 +8,8 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "sonner";
 import Navbar from "@/components/Navbar";
+import 'react-loading-skeleton/dist/skeleton.css';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

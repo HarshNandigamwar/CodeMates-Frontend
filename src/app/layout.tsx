@@ -48,7 +48,7 @@ export default function RootLayout({
         <Providers>
           <CheckAuth />
           <Navbar />
-          <main className="pt-16">{children}</main>
+          <main >{children}</main>
           <Toaster theme="dark" richColors />
         </Providers>
       </body>

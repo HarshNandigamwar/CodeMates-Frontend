@@ -7,6 +7,7 @@ import {
   Send,
   Loader2,
   Trash2,
+  Edit3,
 } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ interface PostProps {
 export default function PostCard({ post: initialPost }: PostProps) {
   const { user } = useSelector((state: RootState) => state.auth);
   const [showComments, setShowComments] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [currentPost, setCurrentPost] = useState(initialPost);
   const { user: currentUser } = useSelector((state: RootState) => state.auth);
   const isOwner = currentUser?._id === currentPost.user._id;
@@ -59,6 +61,36 @@ export default function PostCard({ post: initialPost }: PostProps) {
       setCommentLoading(false);
     }
   };
+  // Edit Post
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(currentPost.content);
+  const [editFile, setEditFile] = useState<File | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const handleEditPost = async () => {
+    setEditLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("content", editContent);
+      if (editFile) {
+        formData.append("url", editFile);
+      }
+      const res = await axiosInstance.put(
+        `/posts/edit/${currentPost._id}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      setCurrentPost(res.data);
+      setIsEditing(false);
+      setEditFile(null);
+      toast.success("Post updated!");
+    } catch (error) {
+      toast.error("Failed to update post");
+    } finally {
+      setEditLoading(false);
+    }
+  };
   // Delete Post
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
@@ -94,47 +126,109 @@ export default function PostCard({ post: initialPost }: PostProps) {
         </div>
         {/* Edit & Delete Post */}
         <div className="relative group ">
-          <button className="text-zinc-500 hover:text-white p-2">
-            <MoreVertical size={18} />
-          </button>
-          {/* Dropdown Menu */}
           {isOwner && (
-            <div className="absolute right-0 mt-2 w-32 bg-[#18181b] border border-zinc-800 rounded-lg shadow-xl hidden group-hover:block z-50">
+            <div>
+              {/* Dropdown Menu button */}
               <button
-                onClick={handleDelete}
-                className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors flex items-center gap-2"
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="text-zinc-500 hover:text-white p-2 cursor-pointer"
               >
-                <Trash2 size={14} /> Delete
+                <MoreVertical size={18} />
               </button>
+              {/* Dropdown Menu */}
+              {showDropdown && (
+                <div
+                  className={`absolute right-0 mt-2 w-32 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl z-50 overflow-hidden`}
+                >
+                  {/* Edit Button */}
+                  <button
+                    onClick={() => {
+                      setShowDropdown(false);
+                      setIsEditing(true);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800 flex items-center gap-2"
+                  >
+                    <Edit3 size={14} /> Edit
+                  </button>
+                  {/* Delete Button */}
+                  <button
+                    onClick={() => {
+                      setShowDropdown(false);
+                      handleDelete();
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 flex items-center gap-2"
+                  >
+                    <Trash2 size={14} /> Delete
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
-      {/* Content Text */}
-      <div className="px-4 pb-3">
-        <p className="text-zinc-300 text-sm leading-relaxed">
-          {currentPost.content}
-        </p>
-      </div>
-      {/* Dynamic Media */}
-      {currentPost.url && (
-        <div className="w-full bg-black flex justify-center border-y border-zinc-800/50">
-          {currentPost.mediaType === "video" ? (
-            <video
-              src={currentPost.url}
-              controls
-              className="w-full max-h-[500px]"
-            />
+      <div className=" border border-zinc-800 overflow-hidden mb-6">
+        <div className="p-4">
+          {isEditing ? (
+            <div className="space-y-4">
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm outline-none focus:border-accent min-h-[100px] text-white"
+                placeholder="What's on your mind?"
+              />
+              <input
+                type="file"
+                onChange={(e) => setEditFile(e.target.files?.[0] || null)}
+                className="text-xs text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:bg-zinc-800 file:text-zinc-300 cursor-pointer"
+              />
+              {/* Buttons */}
+              <div className="flex gap-2">
+                {/* Save Button */}
+                <button
+                  onClick={handleEditPost}
+                  disabled={editLoading}
+                  className="flex-1 bg-accent text-black font-bold py-2 rounded-lg text-sm disabled:opacity-50 items-center"
+                >
+                  {editLoading ? <Loader2 className="animate-spin" /> : "Save"}
+                </button>
+                {/* Cancel BUtton */}
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="flex-1 bg-zinc-800 text-white py-2 rounded-lg text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           ) : (
-            <img
-              src={currentPost.url}
-              loading="lazy"
-              alt="post"
-              className="w-full max-h-[500px] object-contain"
-            />
+            <>
+              {/* Content Text */}
+              <p className="text-zinc-300 text-sm mb-3">
+                {currentPost.content}
+              </p>
+              {/* Media Display */}
+              {currentPost.url && (
+                <div className="rounded-xl overflow-hidden border border-zinc-800 bg-black">
+                  {currentPost.mediaType === "video" ? (
+                    <video
+                      src={currentPost.url}
+                      controls
+                      className="w-full max-h-[400px]"
+                    />
+                  ) : (
+                    <img
+                      src={currentPost.url}
+                      alt="post"
+                      className="w-full max-h-[400px] object-contain"
+                    />
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
-      )}
+      </div>
+
       {/* Action Bar */}
       <div className="p-4 flex items-center gap-6">
         {/* like button */}
@@ -169,6 +263,7 @@ export default function PostCard({ post: initialPost }: PostProps) {
           </span>
         </button>
       </div>
+
       {/* Comment Section */}
       {showComments && (
         <div className="border-t border-zinc-800 bg-[#0d0d0d] p-4 animate-in slide-in-from-top duration-300">

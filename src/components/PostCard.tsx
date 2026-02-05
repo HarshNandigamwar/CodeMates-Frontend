@@ -20,9 +20,8 @@ export default function PostCard({ post }: PostProps) {
             alt={post.user.username}
           />
           <div>
-            <h4 className="text-white font-semibold text-sm">
-              @{post.user.username}
-            </h4>
+            <p className="text-white font-semibold text-sm">{post.user.name}</p>
+            <p className="text-gray-400 text-sm">{post.user.username}</p>
             <span className="text-zinc-500 text-[10px]">
               {new Date(post.createdAt).toLocaleString()}
             </span>

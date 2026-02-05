@@ -10,6 +10,9 @@ import {
   Edit3,
   Code2,
   Layers,
+  Heart,
+  MessageCircle,
+  X,
 } from "lucide-react";
 import AuthWrapper from "@/components/AuthWrapper";
 import { toast } from "sonner";
@@ -20,6 +23,7 @@ export default function ProfilePage() {
   const { username } = useParams();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("posts");
 
   useEffect(() => {
     if (!username) return;
@@ -41,6 +45,18 @@ export default function ProfilePage() {
     fetchProfile();
   }, [username]);
 
+  const [selectedPost, setSelectedPost] = useState<any>(null);
+
+  const openModal = (post: any) => {
+    setSelectedPost(post);
+    // document.body.style.overflow = "hidden";
+  };
+
+  const closeModal = () => {
+    setSelectedPost(null);
+    // document.body.style.overflow = "auto";
+  };
+
   if (loading)
     return (
       <>
@@ -61,120 +77,332 @@ export default function ProfilePage() {
     <AuthWrapper>
       <div className="min-h-screen bg-[#0a0a0a] text-white pb-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative -mt-24 flex flex-col md:flex-row md:items-end md:gap-6">
+          <div className="relative mt-24 flex flex-col md:flex-row md:gap-6 items-center md:items-start">
             {/* Profile Picture */}
             <div className="relative h-32 w-32 md:h-44 md:w-44 rounded-2xl overflow-hidden border-4 border-[#0a0a0a] bg-zinc-800 shadow-2xl">
               <img
                 src={user.profilePic || "https://placehold.co/200x200"}
+                loading="lazy"
                 alt={user.name}
                 className="h-full w-full object-cover"
               />
             </div>
-
             {/* Basic Info */}
-            <div className="mt-4 md:mb-4 flex-1">
+            <div className="mt-4 md:mb-4 flex-1 text-center md:text-start ">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
+                  {/* Name */}
                   <h1 className="text-3xl font-bold tracking-tight">
                     {user.name}
                   </h1>
-                  <p className="text-zinc-400">@{user.username}</p>
+                  {/* UserName */}
+                  <p className="text-zinc-400">{user.username}</p>
+                  {/* Status bar */}
+                  <div className="flex gap-6 py-4 justify-center md:justify-start">
+                    {/* Post */}
+                    <div className="text-center">
+                      <span className="font-bold text-lg">
+                        {user.postsCount}
+                      </span>{" "}
+                      <p className="text-zinc-500 text-sm">Posts</p>
+                    </div>
+                    {/* Followers */}
+                    <div className="text-center cursor-pointer">
+                      <span className="font-bold text-lg">
+                        {user.followersCount}
+                      </span>{" "}
+                      <p className="text-zinc-500 text-sm">Followers</p>
+                    </div>
+                    {/* Following */}
+                    <div className="text-center cursor-pointer">
+                      <span className="font-bold text-lg">
+                        {user.followingCount}
+                      </span>{" "}
+                      <p className="text-zinc-500 text-sm">Following</p>
+                    </div>
+                  </div>
                 </div>
-                <button className="flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold px-6 py-2.5 rounded-xl transition-all">
+                {/* Edit Profile button */}
+                <button className="text-accent hover:text-accent-hover border rounded-md p-2 bg-accent/10 cursor-pointer flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all">
                   <Edit3 size={18} /> Edit Profile
                 </button>
               </div>
             </div>
           </div>
-
-          {/* Stats Bar */}
-          <div className="flex gap-6 mt-8 py-4 border-y border-zinc-800/50">
-            <div className="text-center">
-              <span className="font-bold text-lg">{user.postsCount}</span>{" "}
-              <p className="text-zinc-500 text-sm">Posts</p>
+          {/* About & TechStack */}
+          <div className="flex flex-col md:flex-row gap-2 mt-4 justify-center">
+            {/* About Card */}
+            <div className="bg-[#111111] p-6 rounded-2xl border border-zinc-800 md:w-[50%]">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <Layers size={20} className="text-accent" /> About
+              </h3>
+              {/* Bio */}
+              <p className="text-zinc-300 text-sm leading-relaxed">
+                {user.bio}
+              </p>
+              {/* Social Links */}
+              <div className="mt-6 space-y-3">
+                <SocialLink
+                  icon={<Github size={18} />}
+                  label="GitHub"
+                  href={user.github}
+                />
+                <SocialLink
+                  icon={<Linkedin size={18} />}
+                  label="LinkedIn"
+                  href={user.linkedin}
+                />
+                <SocialLink
+                  icon={<Globe size={18} />}
+                  label="Portfolio"
+                  href={user.portfolio}
+                />
+                <div className="flex items-center gap-3 text-zinc-400 text-sm">
+                  <Calendar size={18} /> Joined{" "}
+                  {new Date(user.createdAt).toLocaleDateString()}
+                </div>
+              </div>
             </div>
-            <div className="text-center">
-              <span className="font-bold text-lg">{user.followersCount}</span>{" "}
-              <p className="text-zinc-500 text-sm">Followers</p>
-            </div>
-            <div className="text-center">
-              <span className="font-bold text-lg">{user.followingCount}</span>{" "}
-              <p className="text-zinc-500 text-sm">Following</p>
+            {/* Tech Stack Card */}
+            <div className="bg-[#111111] p-6 rounded-2xl border border-zinc-800 md:w-[50%]">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <Code2 size={20} className="text-accent" /> Tech Stack
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {user.techstack.map((tech: string) => (
+                  <span
+                    key={tech}
+                    className="bg-accent/10 text-accent border border-accent/20 px-3 py-1 rounded-full text-xs font-medium"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* Layout Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-            {/* Sidebar (Left) */}
-            <div className="space-y-6">
-              <div className="bg-[#111111] p-6 rounded-2xl border border-zinc-800">
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                  <Layers size={20} className="text-accent" /> About
-                </h3>
-                <p className="text-zinc-300 text-sm leading-relaxed">
-                  {user.bio}
-                </p>
-
-                <div className="mt-6 space-y-3">
-                  <SocialLink
-                    icon={<Github size={18} />}
-                    label="GitHub"
-                    href={user.github}
-                  />
-                  <SocialLink
-                    icon={<Linkedin size={18} />}
-                    label="LinkedIn"
-                    href={user.linkedin}
-                  />
-                  <SocialLink
-                    icon={<Globe size={18} />}
-                    label="Portfolio"
-                    href={user.portfolio}
-                  />
-                  <div className="flex items-center gap-3 text-zinc-400 text-sm">
-                    <Calendar size={18} /> Joined{" "}
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-
-              {/* Tech Stack Card */}
-              <div className="bg-[#111111] p-6 rounded-2xl border border-zinc-800">
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                  <Code2 size={20} className="text-accent" /> Tech Stack
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {user.techstack.map((tech: string) => (
-                    <span
-                      key={tech}
-                      className="bg-accent/10 text-accent border border-accent/20 px-3 py-1 rounded-full text-xs font-medium"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Posts Area (Right) */}
+          {/* Posts */}
+          <div className="mt-5">
             <div className="lg:col-span-2">
-              <div className="flex gap-4 mb-6 border-b border-zinc-800">
-                <button className="pb-4 border-b-2 border-accent text-accent font-medium">
-                  Posts
+              {/* Tabs Navigation */}
+              <div className="flex items-center justify-center gap-10 mb-6 border-b border-zinc-800">
+                <button
+                  onClick={() => setActiveTab("posts")}
+                  className={`pb-4 text-sm font-semibold transition-all ${
+                    activeTab === "posts"
+                      ? "border-b-2 border-accent text-accent"
+                      : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  POSTS
                 </button>
-                <button className="pb-4 text-zinc-500 hover:text-white transition-colors">
-                  Media
+                <button
+                  onClick={() => setActiveTab("media")}
+                  className={`pb-4 text-sm font-semibold transition-all ${
+                    activeTab === "media"
+                      ? "border-b-2 border-accent text-accent"
+                      : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  MEDIA
                 </button>
               </div>
-
+              {/* Content Display */}
               {posts.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6">
-                  {" "}
-                  {/* Mobile aur Desktop dono ke liye stack layout */}
-                  {posts.map((post: any) => (
-                    <PostCard key={post._id} post={post} />
-                  ))}
-                </div>
+                <>
+                  {activeTab === "posts" && (
+                    <div className="grid grid-cols-3 gap-1 md:gap-4">
+                      {posts.map((post: any) => (
+                        <div
+                          key={post._id}
+                          onClick={() => openModal(post)}
+                          className="relative aspect-square group cursor-pointer overflow-hidden rounded-md md:rounded-lg bg-zinc-900"
+                        >
+                          {/* Image/Thumbnail */}
+                          {post.mediaType === "video" ? (
+                            <video
+                              src={post.url}
+                              autoPlay={false}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <img
+                              src={post.url}
+                              alt="Post N/A"
+                              loading="lazy"
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                          {/* Post Modal Overlay */}
+                          {selectedPost && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm ">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  closeModal();
+                                }}
+                                className="absolute top-6 right-6 p-2 text-white hover:text-accent bg-zinc-800/50 rounded-full transition-all z-[120] cursor-pointer"
+                              >
+                                <X size={28} />
+                              </button>
+
+                              <div
+                                onClick={(e) => e.stopPropagation()}
+                                className="bg-[#111111] w-full max-w-5xl h-full max-h-[90vh] rounded-2xl overflow-hidden border border-zinc-800 flex flex-col md:flex-row"
+                              >
+                                <div className="w-full md:w-[60%] bg-black flex items-center justify-center border-b md:border-b-0 md:border-r border-zinc-800">
+                                  {selectedPost.mediaType === "video" ? (
+                                    <video
+                                      src={selectedPost.url}
+                                      controls
+                                      className="w-full max-h-full"
+                                    />
+                                  ) : (
+                                    <img
+                                      src={selectedPost.url}
+                                      alt="post"
+                                      loading="lazy"
+                                      className="w-full h-full object-contain"
+                                    />
+                                  )}
+                                </div>
+                                {/* Right Side: Details & Comments */}
+                                <div className="w-full md:w-[40%] flex flex-col h-full">
+                                  {/* Header */}
+                                  <div className="p-4 border-b border-zinc-800 flex items-center gap-3">
+                                    <img
+                                      src={
+                                        selectedPost.user.profilePic ||
+                                        "https://placehold.co/100x100"
+                                      }
+                                      loading="lazy"
+                                      className="w-8 h-8 rounded-full border border-accent/30"
+                                    />
+                                    <div className="flex flex-col">
+                                      <span className="font-bold text-sm">
+                                        {selectedPost.user.name}
+                                      </span>
+                                      <span className="text-sm text-gray-400">
+                                        {selectedPost.user.username}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {/* Caption & Comments (Scrollable) */}
+                                  <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                                    <p className="text-sm text-zinc-300">
+                                      {selectedPost.content}
+                                    </p>
+                                    <hr className="border-zinc-800" />
+
+                                    <div className="space-y-4">
+                                      {selectedPost.comments &&
+                                      selectedPost.comments.length > 0 ? (
+                                        selectedPost.comments.map(
+                                          (comment: any) => (
+                                            <div
+                                              key={comment._id}
+                                              className="flex gap-2 animate-in fade-in duration-300"
+                                            >
+                                              <div className="w-6 h-6 rounded-full bg-zinc-800 shrink-0 overflow-hidden border border-zinc-700">
+                                                <img
+                                                  src={
+                                                    comment.user?.profilePic ||
+                                                    "https://placehold.co/100x100"
+                                                  }
+                                                  loading="lazy"
+                                                  className="w-full h-full object-cover"
+                                                />
+                                              </div>
+                                              <div className="bg-zinc-900/50 p-2.5 rounded-xl flex-1 border border-zinc-800/50">
+                                                <p className="text-[11px] font-bold text-accent mb-0.5">
+                                                  {comment.user?.username ||
+                                                    "user"}
+                                                </p>
+                                                <p className="text-xs text-zinc-200 leading-snug">
+                                                  {comment.text}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          )
+                                        )
+                                      ) : (
+                                        <div className="flex flex-col items-center justify-center py-10 text-center">
+                                          <div className="p-3 bg-zinc-900/50 rounded-full mb-3">
+                                            <MessageCircle
+                                              size={24}
+                                              className="text-zinc-600"
+                                            />
+                                          </div>
+                                          <p className="text-xs text-zinc-500 italic">
+                                            No comments yet.
+                                          </p>
+                                          <p className="text-[10px] text-zinc-600 mt-1 text-accent/80 font-medium">
+                                            Be the first to share your thoughts!
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Footer: Likes & Quick Comment */}
+                                  <div className="p-4 border-t border-zinc-800">
+                                    <div className="flex items-center gap-4 mb-3">
+                                      <Heart
+                                        size={22}
+                                        className={
+                                          selectedPost.likes?.length > 0
+                                            ? "fill-red-500 text-red-500"
+                                            : "text-zinc-400"
+                                        }
+                                      />
+                                      <MessageCircle
+                                        size={22}
+                                        className="text-zinc-400"
+                                      />
+                                    </div>
+                                    <p className="text-xs font-bold mb-2">
+                                      {selectedPost.likes?.length || 0} likes
+                                    </p>
+                                    <div className="flex gap-2">
+                                      <input
+                                        type="text"
+                                        placeholder="Add a comment..."
+                                        className="bg-transparent text-sm w-full outline-none border-b border-zinc-800 focus:border-accent pb-1"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {/* Hover Overlay: Like/Comment Count */}
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div className="flex gap-4 text-white font-bold">
+                              <div className="flex items-center gap-1">
+                                <Heart size={20} className="fill-white" />
+                                <span>{post.likes?.length || 0}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <MessageCircle
+                                  size={20}
+                                  className="fill-white"
+                                />
+                                <span>{post.comments?.length || 0}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {activeTab === "media" && (
+                    <div className="grid grid-cols-1 gap-6 max-w-2xl mx-auto">
+                      {posts.map((post: any) => (
+                        <PostCard key={post._id} post={post} />
+                      ))}
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 bg-[#111111] rounded-3xl border-2 border-dashed border-zinc-800">
                   <p className="text-zinc-500">No posts yet from this user.</p>

@@ -21,7 +21,10 @@ export default function LoginPage() {
       dispatch(setAuth(res.data));
       toast.success("Welcome back to CodeMates!");
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Login failed");
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong";
+      toast.error(errorMessage);
+      console.error(errorMessage);
     } finally {
       setLoading(false);
     }

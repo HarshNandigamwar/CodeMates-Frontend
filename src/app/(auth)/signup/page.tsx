@@ -40,15 +40,45 @@ export default function SignupPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validateStep1 = () => {
+    const { username, email, password, name } = formData;
+    if (!username || !email || !password || !name) {
+      toast.warning("Please fill all required fields in Step 1");
+      return false;
+    }
+    // Email format check
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      toast.warning("Please enter a valid email address");
+      return false;
+    }
+    if (password.length < 6) {
+      toast.warning("Password must be at least 6 characters");
+      return false;
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (validateStep1()) {
+      setStep(2);
+    }
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Re-validate just in case
+    if (!validateStep1()) return;
     setLoading(true);
     try {
       const res = await axiosInstance.post("/auth/signup", formData);
       dispatch(setAuth(res.data));
       toast.success("Account created successfully!");
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Signup failed");
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong";
+      toast.error(errorMessage);
+      console.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -85,7 +115,7 @@ export default function SignupPage() {
                 <InputIcon
                   icon={<User size={18} />}
                   name="name"
-                  placeholder="Full Name"
+                  placeholder="Full Name *"
                   value={formData.name}
                   onChange={handleChange}
                   required
@@ -93,7 +123,7 @@ export default function SignupPage() {
                 <InputIcon
                   icon={<User size={18} />}
                   name="username"
-                  placeholder="Username"
+                  placeholder="Username *"
                   value={formData.username}
                   onChange={handleChange}
                   required
@@ -102,7 +132,7 @@ export default function SignupPage() {
                   icon={<Mail size={18} />}
                   name="email"
                   type="email"
-                  placeholder="Email"
+                  placeholder="Email *"
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -111,7 +141,7 @@ export default function SignupPage() {
                   icon={<Lock size={18} />}
                   name="password"
                   type="password"
-                  placeholder="Password"
+                  placeholder="Password *"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -126,7 +156,7 @@ export default function SignupPage() {
               />
               <button
                 type="button"
-                onClick={() => setStep(2)}
+                onClick={handleNext}
                 className="w-full flex justify-center items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold py-3 rounded-xl transition-all"
               >
                 Next Step <ArrowRight size={18} />

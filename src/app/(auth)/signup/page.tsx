@@ -14,7 +14,7 @@ import {
   Code,
   ArrowRight,
   ArrowLeft,
-  Check,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -174,17 +174,20 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 flex justify-center items-center gap-2 border border-zinc-700 text-white hover:bg-zinc-800 font-bold py-3 rounded-xl transition-all"
+                  className="flex-1 flex justify-center items-center gap-2 border border-zinc-700 text-white hover:bg-zinc-800 font-bold py-3 rounded-xl transition-all cursor-pointer"
                 >
                   <ArrowLeft size={18} /> Back
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-[2] flex justify-center items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold py-3 rounded-xl transition-all"
+                  className="flex-2 flex justify-center items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold py-3 rounded-xl transition-all disabled:opacity-50"
                 >
-                  {loading ? "Creating Account..." : "Complete Signup"}{" "}
-                  <Check size={18} />
+                  {loading ? (
+                    <Loader2 className="animate-spin text-white" />
+                  ) : (
+                    "Complete Signup"
+                  )}
                 </button>
               </div>
             </div>

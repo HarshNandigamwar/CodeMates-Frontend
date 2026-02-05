@@ -13,21 +13,25 @@ import {
   Heart,
   MessageCircle,
   X,
+  Loader2,
+  Send,
 } from "lucide-react";
 import AuthWrapper from "@/components/AuthWrapper";
 import { toast } from "sonner";
 import PostCard from "@/components/PostCard";
 import ProfilePageLoader from "@/components/SkeletonLoders/ProfilePageLoader";
+import { useSelector } from "react-redux";
 
 export default function ProfilePage() {
   const { username } = useParams();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("posts");
+  const [activeTab, setActiveTab] = useState("gride");
+  const { user: currentUser } = useSelector((state: any) => state.auth);
 
+  // Fetch user profile
   useEffect(() => {
     if (!username) return;
-
     const fetchProfile = async () => {
       try {
         const res = await axiosInstance.get(`/auth/profile/${username}`);
@@ -44,17 +48,57 @@ export default function ProfilePage() {
     };
     fetchProfile();
   }, [username]);
-
+  // Open and Close Post Model
   const [selectedPost, setSelectedPost] = useState<any>(null);
-
   const openModal = (post: any) => {
     setSelectedPost(post);
     // document.body.style.overflow = "hidden";
   };
-
   const closeModal = () => {
     setSelectedPost(null);
     // document.body.style.overflow = "auto";
+  };
+
+  // Add Comment on post
+  const [commentText, setCommentText] = useState("");
+  const [commentLoading, setCommentLoading] = useState(false);
+  const handleAddComment = async () => {
+    if (!commentText.trim()) return;
+    setCommentLoading(true);
+    try {
+      const res = await axiosInstance.post(
+        `/posts/comment/${selectedPost._id}`,
+        {
+          text: commentText,
+        }
+      );
+      setSelectedPost(res.data);
+      setCommentText("");
+      toast.success("Comment added!");
+    } catch (error) {
+      toast.error("Failed to add comment");
+      console.error(error);
+    } finally {
+      setCommentLoading(false);
+    }
+  };
+
+  // Add like on post
+  const handleLikePost = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!selectedPost) return;
+    try {
+      const res = await axiosInstance.put(`/posts/like/${selectedPost._id}`);
+      setSelectedPost(res.data);
+      setData((prev: any) => ({
+        ...prev,
+        posts: prev.posts.map((p: any) =>
+          p._id === res.data._id ? res.data : p
+        ),
+      }));
+    } catch (error) {
+      toast.error("Failed to like post");
+    }
   };
 
   if (loading)
@@ -165,6 +209,7 @@ export default function ProfilePage() {
             </div>
             {/* Tech Stack Card */}
             <div className="bg-[#111111] p-6 rounded-2xl border border-zinc-800 md:w-[50%]">
+              {/* Tech Stack */}
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                 <Code2 size={20} className="text-accent" /> Tech Stack
               </h3>
@@ -186,30 +231,30 @@ export default function ProfilePage() {
               {/* Tabs Navigation */}
               <div className="flex items-center justify-center gap-10 mb-6 border-b border-zinc-800">
                 <button
-                  onClick={() => setActiveTab("posts")}
+                  onClick={() => setActiveTab("gride")}
                   className={`pb-4 text-sm font-semibold transition-all ${
                     activeTab === "posts"
                       ? "border-b-2 border-accent text-accent"
                       : "text-zinc-500 hover:text-zinc-300"
                   }`}
                 >
-                  POSTS
+                  GRIDE
                 </button>
                 <button
-                  onClick={() => setActiveTab("media")}
+                  onClick={() => setActiveTab("list")}
                   className={`pb-4 text-sm font-semibold transition-all ${
                     activeTab === "media"
                       ? "border-b-2 border-accent text-accent"
                       : "text-zinc-500 hover:text-zinc-300"
                   }`}
                 >
-                  MEDIA
+                  LIST
                 </button>
               </div>
               {/* Content Display */}
               {posts.length > 0 ? (
                 <>
-                  {activeTab === "posts" && (
+                  {activeTab === "gride" && (
                     <div className="grid grid-cols-3 gap-1 md:gap-4">
                       {posts.map((post: any) => (
                         <div
@@ -287,7 +332,7 @@ export default function ProfilePage() {
                                     </div>
                                   </div>
 
-                                  {/* Caption & Comments (Scrollable) */}
+                                  {/* Caption & Comments*/}
                                   <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                                     <p className="text-sm text-zinc-300">
                                       {selectedPost.content}
@@ -306,7 +351,7 @@ export default function ProfilePage() {
                                               <div className="w-6 h-6 rounded-full bg-zinc-800 shrink-0 overflow-hidden border border-zinc-700">
                                                 <img
                                                   src={
-                                                    comment.user?.profilePic ||
+                                                    comment.profilePic ||
                                                     "https://placehold.co/100x100"
                                                   }
                                                   loading="lazy"
@@ -315,8 +360,7 @@ export default function ProfilePage() {
                                               </div>
                                               <div className="bg-zinc-900/50 p-2.5 rounded-xl flex-1 border border-zinc-800/50">
                                                 <p className="text-[11px] font-bold text-accent mb-0.5">
-                                                  {comment.user?.username ||
-                                                    "user"}
+                                                  {comment.name || "user"}
                                                 </p>
                                                 <p className="text-xs text-zinc-200 leading-snug">
                                                   {comment.text}
@@ -343,32 +387,59 @@ export default function ProfilePage() {
                                       )}
                                     </div>
                                   </div>
-
                                   {/* Footer: Likes & Quick Comment */}
                                   <div className="p-4 border-t border-zinc-800">
-                                    <div className="flex items-center gap-4 mb-3">
-                                      <Heart
-                                        size={22}
-                                        className={
-                                          selectedPost.likes?.length > 0
-                                            ? "fill-red-500 text-red-500"
-                                            : "text-zinc-400"
-                                        }
-                                      />
-                                      <MessageCircle
-                                        size={22}
-                                        className="text-zinc-400"
-                                      />
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        onClick={handleLikePost}
+                                        className="hover:scale-110 active:scale-125 transition-all cursor-pointer"
+                                      >
+                                        <Heart
+                                          size={24}
+                                          className={
+                                            selectedPost.likes?.includes(
+                                              currentUser?._id
+                                            )
+                                              ? "fill-red-500 text-red-500"
+                                              : "text-zinc-400 hover:text-red-400"
+                                          }
+                                        />
+                                      </button>
+                                      <p className="text-xs font-bold text-zinc-300">
+                                        {selectedPost.likes?.length || 0} likes
+                                      </p>
                                     </div>
-                                    <p className="text-xs font-bold mb-2">
-                                      {selectedPost.likes?.length || 0} likes
-                                    </p>
-                                    <div className="flex gap-2">
-                                      <input
-                                        type="text"
-                                        placeholder="Add a comment..."
-                                        className="bg-transparent text-sm w-full outline-none border-b border-zinc-800 focus:border-accent pb-1"
-                                      />
+                                    {/* post comment */}
+                                    <div className="p-4">
+                                      <div className="flex gap-3 items-center">
+                                        <input
+                                          type="text"
+                                          value={commentText}
+                                          onChange={(e) =>
+                                            setCommentText(e.target.value)
+                                          }
+                                          onKeyDown={(e) =>
+                                            e.key === "Enter" &&
+                                            handleAddComment()
+                                          }
+                                          placeholder="Add a comment..."
+                                          className="bg-zinc-900 text-sm w-full outline-none border border-zinc-800 focus:border-accent rounded-full px-4 py-2 text-white"
+                                        />
+                                        <button
+                                          onClick={handleAddComment}
+                                          disabled={
+                                            commentLoading ||
+                                            !commentText.trim()
+                                          }
+                                          className="text-accent font-bold text-sm disabled:opacity-50 hover:scale-105 transition-transform cursor-pointer"
+                                        >
+                                          {commentLoading ? (
+                                            <Loader2 className="animate-spin" />
+                                          ) : (
+                                            <Send className="text-accent" />
+                                          )}
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -395,7 +466,7 @@ export default function ProfilePage() {
                       ))}
                     </div>
                   )}
-                  {activeTab === "media" && (
+                  {activeTab === "list" && (
                     <div className="grid grid-cols-1 gap-6 max-w-2xl mx-auto">
                       {posts.map((post: any) => (
                         <PostCard key={post._id} post={post} />

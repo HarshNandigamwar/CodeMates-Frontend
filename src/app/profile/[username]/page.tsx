@@ -15,6 +15,7 @@ import {
   X,
   Loader2,
   Send,
+  Trash2,
 } from "lucide-react";
 import AuthWrapper from "@/components/AuthWrapper";
 import { toast } from "sonner";
@@ -58,7 +59,6 @@ export default function ProfilePage() {
     setSelectedPost(null);
     // document.body.style.overflow = "auto";
   };
-
   // Add Comment on post
   const [commentText, setCommentText] = useState("");
   const [commentLoading, setCommentLoading] = useState(false);
@@ -82,7 +82,6 @@ export default function ProfilePage() {
       setCommentLoading(false);
     }
   };
-
   // Add like on post
   const handleLikePost = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -98,6 +97,26 @@ export default function ProfilePage() {
       }));
     } catch (error) {
       toast.error("Failed to like post");
+    }
+  };
+  // Delete Post
+  const handleDeleteModalPost = async (postId: string) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    try {
+      await axiosInstance.delete(`/posts/${postId}`);
+      toast.success("Post deleted successfully");
+      closeModal();
+      setData((prev: any) => ({
+        ...prev,
+        posts: prev.posts.filter((p: any) => p._id !== postId),
+        user: {
+          ...prev.user,
+          postsCount: prev.user.postsCount - 1,
+        },
+      }));
+    } catch (error) {
+      toast.error("Failed to delete post");
+      console.error(error);
     }
   };
 
@@ -232,9 +251,9 @@ export default function ProfilePage() {
               <div className="flex items-center justify-center gap-10 mb-6 border-b border-zinc-800">
                 <button
                   onClick={() => setActiveTab("gride")}
-                  className={`pb-4 text-sm font-semibold transition-all ${
-                    activeTab === "posts"
-                      ? "border-b-2 border-accent text-accent"
+                  className={`pb-4 text-sm font-semibold transition-all cursor-pointer ${
+                    activeTab === "gride"
+                      ? " text-accent"
                       : "text-zinc-500 hover:text-zinc-300"
                   }`}
                 >
@@ -242,9 +261,9 @@ export default function ProfilePage() {
                 </button>
                 <button
                   onClick={() => setActiveTab("list")}
-                  className={`pb-4 text-sm font-semibold transition-all ${
-                    activeTab === "media"
-                      ? "border-b-2 border-accent text-accent"
+                  className={`pb-4 text-sm font-semibold transition-all cursor-pointer ${
+                    activeTab === "list"
+                      ? " text-accent"
                       : "text-zinc-500 hover:text-zinc-300"
                   }`}
                 >
@@ -280,6 +299,7 @@ export default function ProfilePage() {
                           {/* Post Modal Overlay */}
                           {selectedPost && (
                             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm ">
+                              {/* Close Model Button */}
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -330,6 +350,20 @@ export default function ProfilePage() {
                                         {selectedPost.user.username}
                                       </span>
                                     </div>
+                                    {/* /Delete Post */}
+                                    {currentUser?._id ===
+                                      selectedPost.user._id && (
+                                      <button
+                                        onClick={() =>
+                                          handleDeleteModalPost(
+                                            selectedPost._id
+                                          )
+                                        }
+                                        className="text-zinc-500 hover:text-red-500 transition-all p-1"
+                                      >
+                                        <Trash2 size={20} />
+                                      </button>
+                                    )}
                                   </div>
 
                                   {/* Caption & Comments*/}

@@ -6,6 +6,7 @@ import {
   MoreVertical,
   Send,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
@@ -19,12 +20,12 @@ interface PostProps {
 export default function PostCard({ post: initialPost }: PostProps) {
   const { user } = useSelector((state: RootState) => state.auth);
   const [showComments, setShowComments] = useState(false);
-  const [commentText, setCommentText] = useState("");
-  const [commentLoading, setCommentLoading] = useState(false);
   const [currentPost, setCurrentPost] = useState(initialPost);
-  const isLiked = currentPost.likes.includes(user?._id);
+  const { user: currentUser } = useSelector((state: RootState) => state.auth);
+  const isOwner = currentUser?._id === currentPost.user._id;
 
   // Add like on post
+  const isLiked = currentPost.likes.includes(user?._id);
   const handleLike = async () => {
     if (!user) return toast.error("Please login to like");
     try {
@@ -36,6 +37,8 @@ export default function PostCard({ post: initialPost }: PostProps) {
     }
   };
   // Add Comment on post
+  const [commentText, setCommentText] = useState("");
+  const [commentLoading, setCommentLoading] = useState(false);
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
     setCommentLoading(true);
@@ -56,11 +59,23 @@ export default function PostCard({ post: initialPost }: PostProps) {
       setCommentLoading(false);
     }
   };
+  // Delete Post
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    try {
+      await axiosInstance.delete(`/posts/${currentPost._id}`);
+      toast.success("Post deleted successfully");
+      window.location.reload();
+    } catch (error) {
+      toast.error("Failed to delete post");
+    }
+  };
 
   return (
     <div className="bg-[#111111] border border-zinc-800 rounded-2xl overflow-hidden mb-6 transition-all">
       {/* Header */}
       <div className="p-4 flex items-center justify-between">
+        {/* ProfilePic And name */}
         <div className="flex items-center gap-3">
           <img
             src={currentPost.user.profilePic || "https://placehold.co/100x100"}
@@ -77,9 +92,23 @@ export default function PostCard({ post: initialPost }: PostProps) {
             </span>
           </div>
         </div>
-        <button className="text-zinc-500 hover:text-white">
-          <MoreVertical size={18} />
-        </button>
+        {/* Edit & Delete Post */}
+        <div className="relative group ">
+          <button className="text-zinc-500 hover:text-white p-2">
+            <MoreVertical size={18} />
+          </button>
+          {/* Dropdown Menu */}
+          {isOwner && (
+            <div className="absolute right-0 mt-2 w-32 bg-[#18181b] border border-zinc-800 rounded-lg shadow-xl hidden group-hover:block z-50">
+              <button
+                onClick={handleDelete}
+                className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors flex items-center gap-2"
+              >
+                <Trash2 size={14} /> Delete
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       {/* Content Text */}
       <div className="px-4 pb-3">

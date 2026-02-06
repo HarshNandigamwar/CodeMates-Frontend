@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { logoutRedux } from "@/store/slices/authSlice";
@@ -13,12 +14,16 @@ import {
   Menu,
   X,
   Code2,
+  LogIn,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 
 export default function Navbar() {
+  const pathname: string = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [logout, setLogout] = useState(false);
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );
@@ -26,11 +31,15 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
+      setLogout(true);
       await axiosInstance.post("/auth/logout");
       dispatch(logoutRedux());
       toast.success("Logged out successfully");
     } catch (error) {
       toast.error("Logout failed");
+      setLogout(false);
+    } finally {
+      setLogout(false);
     }
   };
 
@@ -47,12 +56,12 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-zinc-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="bg-accent p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
-              <Code2 size={24} className="text-black" />
+            <div className="p-1.5">
+              <Code2 size={24} className="text-accent" />
             </div>
             <span className="text-xl font-bold text-white tracking-tighter">
               Code<span className="text-accent">Mates</span>
@@ -60,33 +69,48 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-8 h-full">
             {isAuthenticated ? (
               <>
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className="flex items-center gap-2 text-zinc-400 hover:text-accent transition-colors font-medium"
-                  >
-                    {link.icon}
-                    {link.name}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  const isActive = pathname === link.href;
+
+                  return (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className={`flex items-center gap-2 p-1.5 font-medium transition-all duration-200 h-full border-b-2 ${
+                        isActive
+                          ? "text-accent border-accent"
+                          : "text-zinc-400 border-transparent hover:text-accent"
+                      }`}
+                    >
+                      {link.icon}
+                      {link.name}
+                    </Link>
+                  );
+                })}
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 text-red-500 hover:bg-red-500/10 px-3 py-2 rounded-lg transition-all"
+                  title="Logout"
+                  disabled={logout}
+                  className="flex items-center gap-2 text-red-500 bg-red-500/5 hover:bg-red-500/10 px-3 py-2 rounded-lg transition-all cursor-pointer"
                 >
-                  <LogOut size={20} />
+                  {logout ? (
+                    <Loader2 size={20} className="animate-spin" />
+                  ) : (
+                    <LogOut size={20} />
+                  )}
                   <span>Logout</span>
                 </button>
               </>
             ) : (
               <Link
                 href="/login"
-                className="bg-accent hover:bg-accent-hover text-black px-6 py-2 rounded-full font-bold transition-all"
+                className="flex items-center gap-2 text-accent bg-accent/5 hover:bg-accent-hover/10 px-3 py-2 rounded-lg transition-all cursor-pointer"
               >
-                Login
+                <LogIn size={20} />
+                <span>Login</span>
               </Link>
             )}
           </div>
@@ -95,9 +119,13 @@ export default function Navbar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-zinc-400 hover:text-white transition-all"
+              className="text-zinc-400 hover:text-white transition-all cursor-pointer"
             >
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
+              {isOpen ? (
+                <X className={`${isOpen ? "hidden" : "flex"} `} size={28} />
+              ) : (
+                <Menu size={28} />
+              )}
             </button>
           </div>
         </div>
@@ -105,42 +133,64 @@ export default function Navbar() {
 
       {/* Mobile Sidebar/Menu */}
       <div
-        className={`fixed inset-y-0 right-0 w-64 bg-[#111111] border-l border-zinc-800 transform ${
+        className={`fixed inset-y-0 right-0 w-full h-screen flex border-l border-zinc-800 transform ${
           isOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out md:hidden shadow-2xl`}
       >
-        <div className="p-6 flex flex-col gap-6 mt-16">
+        <div
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-[40%] bg-black/10"
+        ></div>
+
+        <div className="w-[60%] p-6 flex flex-col gap-6 mt-16 bg-[#0a0a0a]">
           {isAuthenticated ? (
             <>
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-4 text-zinc-300 text-lg hover:text-accent"
-                >
-                  {link.icon}
-                  {link.name}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-4 text-lg transition-all ${
+                      isActive
+                        ? "text-accent font-bold"
+                        : "text-zinc-300 hover:text-accent"
+                    }`}
+                  >
+                    <span className={isActive ? "text-accent" : ""}>
+                      {link.icon}
+                    </span>
+                    {link.name}
+                  </Link>
+                );
+              })}
               <hr className="border-zinc-800" />
               <button
                 onClick={() => {
                   handleLogout();
                   setIsOpen(false);
                 }}
-                className="flex items-center gap-4 text-red-500 text-lg"
+                title="Logout"
+                disabled={logout}
+                className="flex items-center gap-2 text-red-500 bg-red-500/5 hover:bg-red-500/10 px-3 py-2 rounded-lg transition-all cursor-pointer"
               >
-                <LogOut size={20} /> Logout
+                {logout ? (
+                  <Loader2 size={20} className="animate-spin" />
+                ) : (
+                  <LogOut size={20} />
+                )}
+                <span>Logout</span>
               </button>
             </>
           ) : (
             <Link
               href="/login"
               onClick={() => setIsOpen(false)}
-              className="bg-accent text-black text-center py-3 rounded-xl font-bold"
+              className="flex items-center gap-2 text-accent bg-accent/5 hover:bg-accent-hover/10 px-3 py-2 rounded-lg transition-all cursor-pointer"
             >
-              Login
+              <LogIn size={20} />
+              <span>Login</span>
             </Link>
           )}
         </div>

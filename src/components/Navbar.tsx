@@ -29,6 +29,7 @@ export default function Navbar() {
   );
   const dispatch = useDispatch();
 
+  // Logout
   const handleLogout = async () => {
     try {
       setLogout(true);
@@ -107,7 +108,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="flex items-center gap-2 text-accent bg-accent/5 hover:bg-accent-hover/10 px-3 py-2 rounded-lg transition-all cursor-pointer"
+                className={` flex items-center gap-2 text-accent bg-accent/5 hover:bg-accent-hover/10 px-3 py-2 rounded-lg transition-all cursor-pointer`}
               >
                 <LogIn size={20} />
                 <span>Login</span>

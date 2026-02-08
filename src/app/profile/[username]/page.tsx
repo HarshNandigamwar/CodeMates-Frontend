@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import {
   Github,
@@ -22,22 +22,22 @@ import { toast } from "sonner";
 import PostCard from "@/components/PostCard";
 import ProfilePageLoader from "@/components/SkeletonLoders/ProfilePageLoader";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { username } = useParams();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("gride");
   const { user: currentUser } = useSelector((state: any) => state.auth);
+  const params = useParams();
+  const profileUsername = params.username;
+  const isOwner = currentUser?.username === profileUsername;
 
-  // Fetch user profile
+  //Fetch user Profile
   useEffect(() => {
-    if (!username) return;
     const fetchProfile = async () => {
       try {
-        const res = await axiosInstance.get(`/auth/profile/${username}`);
+        const res = await axiosInstance.get(`/auth/profile/${profileUsername}`);
         setData(res.data);
         setLoading(false);
       } catch (error: any) {
@@ -49,8 +49,8 @@ export default function ProfilePage() {
         }
       }
     };
-    fetchProfile();
-  }, [username]);
+    if (profileUsername) fetchProfile();
+  }, [profileUsername]);
   // Open and Close Post Model
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const openModal = (post: any) => {
@@ -232,12 +232,14 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 {/* Edit Profile button */}
-                <button
-                  className="text-accent hover:text-accent-hover border rounded-md p-2 bg-accent/10 cursor-pointer flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all"
-                  onClick={() => router.push("/edit-profile")}
-                >
-                  <Edit3 size={18} /> Edit Profile
-                </button>
+                {isOwner && (
+                  <button
+                    className="text-accent hover:text-accent-hover border rounded-md p-2 bg-accent/10 cursor-pointer flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all"
+                    onClick={() => router.push("/edit-profile")}
+                  >
+                    <Edit3 size={18} /> Edit Profile
+                  </button>
+                )}
               </div>
             </div>
           </div>

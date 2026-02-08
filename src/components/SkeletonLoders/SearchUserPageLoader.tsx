@@ -6,9 +6,9 @@ const SearchUserPageLoader = () => {
     count.push(i);
   }
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-25">
-      {count.map((idx) => (
-        <div key={idx}>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      {count.map(() => (
+        <div>
           <span className="flex md:hidden gap-2 items-center p-2">
             <Loader height={60} width={60} circle={true} />
             <Loader height={50} width={300} />

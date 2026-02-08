@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { logoutRedux } from "@/store/slices/authSlice";
@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 
 export default function Navbar() {
+  const router = useRouter();
   const pathname: string = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [logout, setLogout] = useState(false);
@@ -34,14 +35,16 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       setLogout(true);
-      await axiosInstance.post("/auth/logout");
       dispatch(logoutRedux());
       toast.success("Logged out successfully");
+      await axiosInstance.post("/auth/logout");
     } catch (error) {
-      toast.error("Logout failed");
-      setLogout(false);
+      console.warn(
+        "Server-side logout failed (probably offline), but local session cleared."
+      );
     } finally {
       setLogout(false);
+      router.push("/login");
     }
   };
 

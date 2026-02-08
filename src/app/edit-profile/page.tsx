@@ -215,7 +215,7 @@ export default function EditProfilePage() {
               />
             </div>
 
-            {/* Buttons */}
+            {/* Buttons */} 
             <div className="flex gap-4 pt-4">
               <button
                 type="submit"

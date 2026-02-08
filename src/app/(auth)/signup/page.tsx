@@ -15,11 +15,16 @@ import {
   ArrowRight,
   ArrowLeft,
   Loader2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -33,23 +38,24 @@ export default function SignupPage() {
   });
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "bio" && value.length > 120) return;
+    setFormData({ ...formData, [name]: value });
   };
 
   const validateStep1 = () => {
     const { username, email, password, name } = formData;
     if (!username || !email || !password || !name) {
-      toast.warning("Please fill all required fields in Step 1");
+      toast.warning("Please fill all required fields");
       return false;
     }
-    // Email format check
+
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email)) {
-      toast.warning("Please enter a valid email address");
+      toast.warning("Invalid email address");
       return false;
     }
     if (password.length < 6) {
@@ -59,26 +65,25 @@ export default function SignupPage() {
     return true;
   };
 
-  const handleNext = () => {
-    if (validateStep1()) {
-      setStep(2);
-    }
-  };
-
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Re-validate just in case
-    if (!validateStep1()) return;
     setLoading(true);
     try {
-      const res = await axiosInstance.post("/auth/signup", formData);
+      const finalData = {
+        ...formData,
+        techstack: formData.techstack
+          .split(",")
+          .map((item) => item.trim())
+          .filter((item) => item !== ""),
+      };
+
+      const res = await axiosInstance.post("/auth/signup", finalData);
       dispatch(setAuth(res.data));
-      toast.success("Account created successfully!");
+      toast.success("Account created!");
+      router.push("/");
     } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || "Something went wrong";
-      toast.error(errorMessage);
-      console.error(errorMessage);
+      toast.error(error.response?.data?.message || "Something went wrong");
+      console.error(error.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -105,7 +110,6 @@ export default function SignupPage() {
         </div>
 
         <form onSubmit={handleSignup} className="space-y-6">
-          {/* STEP 1: Basic Information */}
           {step === 1 && (
             <div className="space-y-4 animate-in fade-in duration-500">
               <h2 className="text-2xl font-bold text-white">
@@ -137,34 +141,62 @@ export default function SignupPage() {
                   onChange={handleChange}
                   required
                 />
-                <InputIcon
-                  icon={<Lock size={18} />}
-                  name="password"
-                  type="password"
-                  placeholder="Password *"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
+
+                {/* Password Field with Toggle */}
+                <div className="relative">
+                  <InputIcon
+                    icon={<Lock size={18} />}
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password *"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-accent cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
-              <textarea
-                name="bio"
-                placeholder="Write a short bio..."
-                className="w-full p-3 h-24 bg-zinc-900 border border-zinc-800 rounded-xl text-white focus:border-accent outline-none transition-all"
-                onChange={handleChange}
-                value={formData.bio}
-              />
+
+              {/* Bio with character counter */}
+              <div className="space-y-1">
+                <textarea
+                  name="bio"
+                  placeholder="Write a short bio..."
+                  className="w-full p-3 h-24 bg-zinc-900 border border-zinc-800 rounded-xl text-white focus:border-accent outline-none transition-all resize-none"
+                  onChange={handleChange}
+                  value={formData.bio}
+                />
+                <p className="text-right text-[10px] text-zinc-500">
+                  {formData.bio.length}/150
+                </p>
+              </div>
+
               <button
                 type="button"
-                onClick={handleNext}
+                onClick={() => validateStep1() && setStep(2)}
                 className="w-full flex justify-center items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold py-3 rounded-xl transition-all"
               >
                 Next Step <ArrowRight size={18} />
               </button>
+              {/* Footer */}
+              <p className="mt-6 text-center text-sm text-zinc-500">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="font-semibold text-accent hover:underline"
+                >
+                  Login
+                </Link>
+              </p>
             </div>
           )}
 
-          {/* STEP 2: Professional & Tech Info */}
           {step === 2 && (
             <div className="space-y-4 animate-in slide-in-from-right duration-500">
               <h2 className="text-2xl font-bold text-white">
@@ -195,7 +227,7 @@ export default function SignupPage() {
                 <InputIcon
                   icon={<Code size={18} />}
                   name="techstack"
-                  placeholder="Tech Stack (cpp, nodejs, etc.)"
+                  placeholder="Tech Stack (cpp, nodejs, react)"
                   value={formData.techstack}
                   onChange={handleChange}
                 />
@@ -204,7 +236,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 flex justify-center items-center gap-2 border border-zinc-700 text-white hover:bg-zinc-800 font-bold py-3 rounded-xl transition-all cursor-pointer"
+                  className="flex-1 flex justify-center items-center gap-2 border border-zinc-700 text-white hover:bg-zinc-800 font-bold py-3 rounded-xl transition-all"
                 >
                   <ArrowLeft size={18} /> Back
                 </button>
@@ -223,31 +255,22 @@ export default function SignupPage() {
             </div>
           )}
         </form>
-
-        <p className="mt-8 text-center text-sm text-zinc-500">
-          Already a member?{" "}
-          <Link
-            href="/login"
-            className="text-accent font-semibold hover:underline"
-          >
-            Login here
-          </Link>
-        </p>
       </div>
     </div>
   );
 }
 
-// Reusable Input Component for clean code
-function InputIcon({ icon, ...props }: any) {
+// Reusable Input Component
+function InputIcon({ icon, type = "text", ...props }: any) {
   return (
     <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-500">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-500 pointer-events-none">
         {icon}
       </div>
       <input
         {...props}
-        className="block w-full pl-10 pr-3 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-accent transition-all sm:text-sm"
+        type={type}
+        className="block w-full pl-10 pr-10 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-accent transition-all sm:text-sm"
       />
     </div>
   );

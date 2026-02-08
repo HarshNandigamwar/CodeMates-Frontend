@@ -4,15 +4,19 @@ import axiosInstance from "@/lib/axios";
 import { useDispatch } from "react-redux";
 import { setAuth } from "@/store/slices/authSlice";
 import { toast } from "sonner";
-import { LogIn, Mail, Lock, Code2, Loader } from "lucide-react";
+import { LogIn, Mail, Lock, Code2, Loader, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
 
+  // Login user
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -20,6 +24,7 @@ export default function LoginPage() {
       const res = await axiosInstance.post("/auth/login", { email, password });
       dispatch(setAuth(res.data));
       toast.success("Welcome back to CodeMates!");
+      router.push("/");
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Something went wrong";
@@ -69,12 +74,24 @@ export default function LoginPage() {
                 <Lock className="h-5 w-5 text-zinc-500" />
               </div>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"} // Dynamic type
                 required
-                className="block w-full pl-10 pr-3 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all sm:text-sm"
+                className="block w-full pl-10 pr-12 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all sm:text-sm"
                 placeholder="Password"
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {/* Show/Hide Toggle Button */}
+              <button
+                type="button" // Ye zaroori hai taaki form submit na ho jaye
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500 hover:text-accent transition-colors cursor-pointer"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
             </div>
           </div>
 

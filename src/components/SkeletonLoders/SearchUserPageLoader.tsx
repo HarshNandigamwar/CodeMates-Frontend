@@ -1,26 +1,35 @@
-import Loader from "./Loader";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
-const SearchUserPageLoader = () => {
-  let count = [0];
-  for (let i = 0; i < 9; i++) {
-    count.push(i);
-  }
+export default function SearchUserPageLoader() {
+  const skeletons = [1, 2, 3, 4, 5];
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      {count.map(() => (
-        <div>
-          <span className="flex md:hidden gap-2 items-center p-2">
-            <Loader height={60} width={60} circle={true} />
-            <Loader height={50} width={300} />
-          </span>
-          <span className="hidden md:flex gap-2 items-center justify-center p-2">
-            <Loader height={60} width={60} circle={true} />
-            <Loader height={50} width={600} />
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
+    <SkeletonTheme baseColor="#1a1a1a" highlightColor="#262626">
+      <div className="flex flex-col gap-3 w-full max-w-2xl mx-auto mt-4">
+        {skeletons.map((i) => (
+          <div
+            key={i}
+            className="flex items-center gap-4 bg-[#111111] p-3 rounded-xl border border-zinc-800"
+          >
+            {/* Profile Avatar Skeleton */}
+            <div className="shrink-0">
+              <Skeleton circle width={50} height={50} />
+            </div>
 
-export default SearchUserPageLoader;
+            {/* User Info Skeleton */}
+            <div className="flex-1 space-y-2">
+              <Skeleton width="40%" height={14} /> {/* Name */}
+              <Skeleton width="25%" height={10} /> {/* Username */}
+            </div>
+
+            {/* Follow/View Profile Button Skeleton */}
+            <div className="shrink-0">
+              <Skeleton width={80} height={32} borderRadius={8} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </SkeletonTheme>
+  );
+}

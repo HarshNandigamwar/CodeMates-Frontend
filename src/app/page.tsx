@@ -2,10 +2,11 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios";
 import PostCard from "@/components/PostCard";
-import { Loader2, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import AuthWrapper from "@/components/AuthWrapper";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import HomeFeedSkeleton from "@/components/SkeletonLoders/HomeFeedSkeleton";
 
 export default function HomePage() {
   const router = useRouter();
@@ -33,12 +34,7 @@ export default function HomePage() {
         <div className="max-w-2xl mx-auto px-4">
           {/* Feed Content */}
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="animate-spin text-accent mb-4" size={40} />
-              <p className="text-zinc-500 animate-pulse">
-                Fetching latest updates...
-              </p>
-            </div>
+            <HomeFeedSkeleton />
           ) : posts.length > 0 ? (
             <div className="flex flex-col gap-8">
               {posts.map((post) => (

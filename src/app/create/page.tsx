@@ -54,7 +54,7 @@ export default function CreatePost() {
   return (
     <AuthWrapper>
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 pt-20">
-        <div className="w-full max-w-xl bg-[#111111] border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl transition-all hover:border-zinc-700">
+        <div className="w-full max-w-xl bg-[#111111] border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl transition-all hover:border-zinc-700">
           {/* Header */}
           <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/20">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">

@@ -62,22 +62,45 @@ export default function ProfilePage() {
     // document.body.style.overflow = "auto";
   };
   // Add like on post
+  // const handleLikePost = async (e: React.MouseEvent) => {
+  //   e.stopPropagation();
+  //   if (!selectedPost) return;
+  //   try {
+  //     const res = await axiosInstance.put(`/posts/like/${selectedPost._id}`);
+  //     setSelectedPost(res.data);
+  //     setData((prev: any) => ({
+  //       ...prev,
+  //       posts: prev.posts.map((p: any) =>
+  //         p._id === res.data._id ? res.data : p
+  //       ),
+  //     }));
+  //   } catch (error) {
+  //     toast.error("Failed to like post");
+  //   }
+  // };
   const handleLikePost = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!selectedPost) return;
     try {
       const res = await axiosInstance.put(`/posts/like/${selectedPost._id}`);
-      setSelectedPost(res.data);
+      const updatedPost = res.data;
+      const finalPostData = {
+        ...updatedPost,
+        user: selectedPost.user,
+      };
+      setSelectedPost(finalPostData);
       setData((prev: any) => ({
         ...prev,
         posts: prev.posts.map((p: any) =>
-          p._id === res.data._id ? res.data : p
+          p._id === updatedPost._id ? finalPostData : p
         ),
       }));
     } catch (error) {
       toast.error("Failed to like post");
+      console.log(error);
     }
   };
+
   // Add Comment on post
   const [commentText, setCommentText] = useState("");
   const [commentLoading, setCommentLoading] = useState(false);

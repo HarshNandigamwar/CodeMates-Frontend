@@ -32,7 +32,10 @@ export default function PostCard({ post: initialPost }: PostProps) {
     if (!user) return toast.error("Please login to like");
     try {
       const res = await axiosInstance.put(`/posts/like/${currentPost._id}`);
-      setCurrentPost(res.data);
+      setCurrentPost({
+        ...res.data,
+        user: currentPost.user,
+      });
     } catch (error: any) {
       toast.error("Error updating like");
       console.error(error);
@@ -51,7 +54,10 @@ export default function PostCard({ post: initialPost }: PostProps) {
           text: commentText,
         }
       );
-      setCurrentPost(res.data);
+      setCurrentPost({
+        ...res.data,
+        user: currentPost.user,
+      });
       setCommentText("");
       toast.success("Comment added!");
     } catch (error: any) {
@@ -81,7 +87,10 @@ export default function PostCard({ post: initialPost }: PostProps) {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      setCurrentPost(res.data);
+      setCurrentPost({
+        ...res.data,
+        user: currentPost.user,
+      });
       setIsEditing(false);
       setEditFile(null);
       toast.success("Post updated!");

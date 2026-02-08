@@ -165,6 +165,58 @@ export default function ProfilePage() {
       console.error(error);
     }
   };
+  // Follow/unfollow
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
+  // Check if current user is already following this profile
+  useEffect(() => {
+    if (data && data.user && currentUser) {
+      const followersList = data.user.followers || [];
+
+      // Check karein ki kya followers array mein koi aisa object hai jiski ID meri ID hai
+      const following = followersList.some((follower: any) =>
+        typeof follower === "string"
+          ? follower === currentUser._id
+          : follower._id === currentUser._id
+      );
+
+      setIsFollowing(following);
+    }
+  }, [data, currentUser]);
+  // Follow / Unfollow User
+  const handleFollowToggle = async () => {
+    if (!currentUser) return toast.error("Please login to follow");
+    setFollowLoading(true);
+    try {
+      const res = await axiosInstance.post(`/auth/follow/${data.user._id}`);
+      // UI Update: State badlein
+      const newFollowingState = !isFollowing;
+      setIsFollowing(newFollowingState);
+      // Update data state taaki followers count bhi turant badle
+      setData((prev: any) => ({
+        ...prev,
+        user: {
+          ...prev.user,
+          followersCount: newFollowingState
+            ? prev.user.followersCount + 1
+            : prev.user.followersCount - 1,
+          followers: newFollowingState
+            ? [...(prev.user.followers || []), { _id: currentUser._id }]
+            : (prev.user.followers || []).filter((f: any) =>
+                typeof f === "string"
+                  ? f !== currentUser._id
+                  : f._id !== currentUser._id
+              ),
+        },
+      }));
+      toast.success(res.data.message);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+      console.log(error.response?.data?.message);
+    } finally {
+      setFollowLoading(false);
+    }
+  };
 
   if (loading)
     return (
@@ -232,12 +284,31 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 {/* Edit Profile button */}
-                {isOwner && (
+                {isOwner ? (
                   <button
                     className="text-accent hover:text-accent-hover border rounded-md p-2 bg-accent/10 cursor-pointer flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all"
                     onClick={() => router.push("/edit-profile")}
                   >
                     <Edit3 size={18} /> Edit Profile
+                  </button>
+                ) : (
+                  //  Follow/Unfollow Button
+                  <button
+                    onClick={handleFollowToggle}
+                    disabled={followLoading}
+                    className={`px-8 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                      isFollowing
+                        ? "bg-zinc-800 text-white border border-zinc-700 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50"
+                        : "bg-accent text-black hover:opacity-90"
+                    }`}
+                  >
+                    {followLoading ? (
+                      <Loader2 className="animate-spin" size={18} />
+                    ) : isFollowing ? (
+                      "Unfollow"
+                    ) : (
+                      "Follow"
+                    )}
                   </button>
                 )}
               </div>

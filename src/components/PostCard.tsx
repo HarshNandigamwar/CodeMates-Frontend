@@ -113,6 +113,7 @@ export default function PostCard({ post: initialPost }: PostProps) {
             src={currentPost.user.profilePic || "https://placehold.co/100x100"}
             className="w-10 h-10 rounded-full object-cover border border-accent/20"
             alt={currentPost.user.username}
+            loading="lazy"
           />
           <div>
             <p className="text-white font-semibold text-sm">
@@ -220,6 +221,7 @@ export default function PostCard({ post: initialPost }: PostProps) {
                       src={currentPost.url}
                       alt="post"
                       className="w-full max-h-[400px] object-contain"
+                      loading="lazy"
                     />
                   )}
                 </div>

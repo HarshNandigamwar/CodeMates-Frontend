@@ -16,6 +16,7 @@ import {
   Code2,
   LogIn,
   Loader2,
+  Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
@@ -46,7 +47,8 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/", icon: <Home size={20} /> },
-    { name: "Messages", href: "/messages", icon: <MessageSquare size={20} /> },
+    { name: "Search", href: "/search", icon: <Search size={20} /> },
+    { name: "Chat", href: "/chat", icon: <MessageSquare size={20} /> },
     { name: "Create", href: "/create", icon: <PlusSquare size={20} /> },
     {
       name: "Profile",
@@ -80,7 +82,7 @@ export default function Navbar() {
                     <Link
                       key={link.name}
                       href={link.href}
-                      className={`flex items-center gap-2 p-1.5 font-medium transition-all duration-200 h-full border-b-2 ${
+                      className={`flex items-center gap-1 p-1 transition-all duration-200 h-full border-b-2 ${
                         isActive
                           ? "text-accent border-accent"
                           : "text-zinc-400 border-transparent hover:text-accent"

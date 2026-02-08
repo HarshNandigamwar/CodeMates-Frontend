@@ -22,12 +22,11 @@ export default function CreatePost() {
       setPreview(URL.createObjectURL(selectedFile));
     }
   };
-
+// Create Post
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content && !file)
       return toast.error("Please add some content or media");
-
     setLoading(true);
     try {
       const formData = new FormData();
@@ -35,16 +34,14 @@ export default function CreatePost() {
       if (file) {
         formData.append("url", file);
       }
-
       await axiosInstance.post("/posts/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
       toast.success("Post created successfully!");
-      router.push("/"); // Redirect to home
+      router.push("/");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to create post");
-      console.log(error);
+      console.log(error.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -66,7 +63,6 @@ export default function CreatePost() {
               placeholder="What's on your mind, developer?"
               className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-accent min-h-[150px] resize-none"
             />
-
             {/* Media Preview Area */}
             {preview && (
               <div className="relative rounded-xl overflow-hidden border border-zinc-800 bg-black">
@@ -91,7 +87,6 @@ export default function CreatePost() {
                 )}
               </div>
             )}
-
             {/* Action Buttons */}
             <div className="flex items-center justify-between pt-4 border-t border-zinc-800">
               <div className="flex gap-4">
@@ -119,17 +114,19 @@ export default function CreatePost() {
                   <span className="text-xs hidden sm:block">Video</span>
                 </button>
               </div>
-
+              {/* Post Button */}
               <button
                 disabled={loading}
-                className="bg-accent hover:bg-accent-hover text-black px-6 py-2 rounded-xl font-bold flex items-center gap-2 disabled:opacity-50 transition-all active:scale-95"
+                className="bg-accent hover:bg-accent-hover text-black px-6 py-2 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-all active:scale-95"
               >
                 {loading ? (
                   <Loader2 className="animate-spin" size={18} />
                 ) : (
-                  <Send size={18} />
+                  <>
+                    <Send size={18} />
+                    <span>Post</span>
+                  </>
                 )}
-                Post
               </button>
             </div>
           </form>

@@ -61,23 +61,6 @@ export default function ProfilePage() {
     setSelectedPost(null);
     // document.body.style.overflow = "auto";
   };
-  // Add like on post
-  // const handleLikePost = async (e: React.MouseEvent) => {
-  //   e.stopPropagation();
-  //   if (!selectedPost) return;
-  //   try {
-  //     const res = await axiosInstance.put(`/posts/like/${selectedPost._id}`);
-  //     setSelectedPost(res.data);
-  //     setData((prev: any) => ({
-  //       ...prev,
-  //       posts: prev.posts.map((p: any) =>
-  //         p._id === res.data._id ? res.data : p
-  //       ),
-  //     }));
-  //   } catch (error) {
-  //     toast.error("Failed to like post");
-  //   }
-  // };
   const handleLikePost = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!selectedPost) return;
@@ -291,14 +274,15 @@ export default function ProfilePage() {
                       <p className="text-zinc-500 text-sm">Posts</p>
                     </div>
                     {/* Followers */}
-                    <div className="text-center cursor-pointer">
+                    <div className="text-center">
                       <span className="font-bold text-lg">
                         {user.followersCount}
                       </span>{" "}
                       <p className="text-zinc-500 text-sm">Followers</p>
                     </div>
                     {/* Following */}
-                    <div className="text-center cursor-pointer">
+
+                    <div className="text-center ">
                       <span className="font-bold text-lg">
                         {user.followingCount}
                       </span>{" "}

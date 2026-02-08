@@ -1,130 +1,77 @@
-import Loader from "./Loader";
-import Skeleton from "react-loading-skeleton";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
-const ProfilePageLoader = () => {
+export default function ProfilePageLoader() {
   return (
-    <div className=" bg-[#0a0a0a] text-white pb-20">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* PC */}
-        <div className="hidden md:flex mt-24 flex-col md:flex-row md:gap-6">
-          {/* Profile Picture */}
-          <div className="h-32 w-32 md:h-44 md:w-44">
-            <Skeleton
-              baseColor="#27272a"
-              highlightColor="#22c55e"
-              height={170}
-              width={170}
-              className="opacity-50 rounded-2xl"
-            />
-          </div>
+    <SkeletonTheme baseColor="#1a1a1a" highlightColor="#262626">
+      <div className="min-h-screen bg-[#0a0a0a] text-white pb-20 pt-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Profile Header Skeleton */}
+          <div className="relative flex flex-col md:flex-row md:gap-8 items-center md:items-start mb-10">
+            {/* Avatar */}
+            <div className="shrink-0">
+              <Skeleton width={160} height={160} borderRadius={16} />
+            </div>
 
-          {/* Basic Info */}
-          <div className="mt-4 pt-5 md:mb-4 flex-1">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h1>
-                  <Skeleton
-                    baseColor="#27272a"
-                    highlightColor="#22c55e"
-                    height={30}
-                    width={500}
-                    className="opacity-50 rounded-2xl"
-                  />
-                </h1>
-                <Skeleton
-                  baseColor="#27272a"
-                  highlightColor="#22c55e"
-                  height={20}
-                  width={500}
-                  className="opacity-50 rounded-2xl"
-                />{" "}
-                <Skeleton
-                  baseColor="#27272a"
-                  highlightColor="#22c55e"
-                  height={20}
-                  width={300}
-                  className="opacity-50 rounded-2xl"
-                />
+            <div className="mt-6 md:mt-2 flex-1 w-full">
+              <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-4">
+                <div className="w-full text-center md:text-left">
+                  <Skeleton width={200} height={28} /> {/* Name */}
+                  <div className="mt-2">
+                    <Skeleton width={120} height={16} /> {/* Username */}
+                  </div>
+                  
+                  {/* Stats (Posts, Followers, Following) */}
+                  <div className="flex gap-8 mt-6 justify-center md:justify-start">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="text-center">
+                        <Skeleton width={40} height={20} />
+                        <Skeleton width={60} height={12} style={{ marginTop: '4px' }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Button */}
+                <Skeleton width={140} height={40} borderRadius={8} />
               </div>
             </div>
           </div>
-        </div>
-        {/* Mobile */}
-        <div className="flex md:hidden mt-24 flex-col items-center gap-5 p-5 ">
-          {/* Profile Picture */}
-          <div>
-            <Skeleton
-              baseColor="#27272a"
-              highlightColor="#22c55e"
-              height={170}
-              width={170}
-              className="opacity-50 rounded-2xl"
-            />
-          </div>
 
-          {/* Basic Info */}
-          <div className="pt-1">
-            <div className="flex flex-col text-center">
-              <div>
-                <h1>
-                  <Skeleton
-                    baseColor="#27272a"
-                    highlightColor="#22c55e"
-                    height={30}
-                    width={280}
-                    className="opacity-50 rounded-2xl"
-                  />
-                </h1>
-                <Skeleton
-                  baseColor="#27272a"
-                  highlightColor="#22c55e"
-                  height={20}
-                  width={200}
-                  className="opacity-50 rounded-2xl mt-2"
-                />{" "}
-                <Skeleton
-                  baseColor="#27272a"
-                  highlightColor="#22c55e"
-                  height={20}
-                  width={200}
-                  className="opacity-50 rounded-2xl mt-2"
-                />
+          {/* About & Tech Stack Skeleton Cards */}
+          <div className="flex flex-col md:flex-row gap-4 mt-8">
+            <div className="bg-[#111111] p-6 rounded-2xl border border-zinc-800 flex-1">
+              <Skeleton width={100} height={20} className="mb-4" />
+              <Skeleton count={3} />
+            </div>
+            <div className="bg-[#111111] p-6 rounded-2xl border border-zinc-800 flex-1">
+              <Skeleton width={120} height={20} className="mb-4" />
+              <div className="flex flex-wrap gap-2">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} width={60} height={24} borderRadius={20} />
+                ))}
               </div>
             </div>
           </div>
-        </div>
 
-        {/*Stats Bar */}
-        <div className="flex items-center justify-center gap-6 mt-8 py-4">
-          <div className="text-center">
-            <Loader width={80} />
-          </div>
-          <div className="text-center">
-            <Loader width={80} />
-          </div>
-          <div className="text-center">
-            <Loader width={80} />
-          </div>
-        </div>
+          {/* Post Tabs & Grid Skeleton */}
+          <div className="mt-10">
+            <div className="flex justify-center gap-10 mb-6 border-b border-zinc-800 pb-4">
+              <Skeleton width={80} height={20} />
+              <Skeleton width={80} height={20} />
+            </div>
 
-        {/* pc */}
-        <div className="hidden p-2 md:flex  gap-5">
-          <Loader height={200} width={450} />
-          <Loader height={200} width={450} />
-        </div>
-        <div className="hidden p-2 md:flex  gap-5">
-          <Loader height={200} width={450} />
-          <Loader height={200} width={450} />
-        </div>
-        {/* phone */}
-        <div className="p-2 md:hidden flex flex-col gap-5">
-          <Loader height={200} width={380} />
-          <Loader height={200} width={380} />
-          <Loader height={200} width={380} />
+            <div className="grid grid-cols-3 gap-1 md:gap-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="aspect-square">
+                  <Skeleton height="100%" borderRadius={8} />
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
+    </SkeletonTheme>
   );
-};
-
-export default ProfilePageLoader;
+}

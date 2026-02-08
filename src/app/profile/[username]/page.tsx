@@ -22,8 +22,10 @@ import { toast } from "sonner";
 import PostCard from "@/components/PostCard";
 import ProfilePageLoader from "@/components/SkeletonLoders/ProfilePageLoader";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { username } = useParams();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -230,7 +232,10 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 {/* Edit Profile button */}
-                <button className="text-accent hover:text-accent-hover border rounded-md p-2 bg-accent/10 cursor-pointer flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all">
+                <button
+                  className="text-accent hover:text-accent-hover border rounded-md p-2 bg-accent/10 cursor-pointer flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all"
+                  onClick={() => router.push("/edit-profile")}
+                >
                   <Edit3 size={18} /> Edit Profile
                 </button>
               </div>

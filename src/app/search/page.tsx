@@ -9,7 +9,6 @@ export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-
   // Search logic
   const handleSearch = async (searchTerm: string) => {
     if (!searchTerm.trim()) {
@@ -26,13 +25,11 @@ export default function SearchPage() {
       setLoading(false);
     }
   };
-
   // Debouncing
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       handleSearch(query);
     }, 500);
-
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
@@ -48,7 +45,6 @@ export default function SearchPage() {
             Search by username to connect with other developers.
           </p>
         </div>
-
         {/* Search Input Box */}
         <div className="relative mb-8">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
@@ -63,7 +59,6 @@ export default function SearchPage() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-
         {/* Results Section */}
         {loading ? (
           <SearchUserPageLoader />

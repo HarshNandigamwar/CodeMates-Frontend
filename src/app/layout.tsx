@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Check user is login or not
 const CheckAuth = () => {
   const dispatch = useDispatch();
   useEffect(() => {

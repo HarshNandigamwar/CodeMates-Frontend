@@ -1,15 +1,8 @@
-"use client";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setAuth } from "@/store/slices/authSlice";
-import axiosInstance from "@/lib/axios";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/components/Providers";
-import { Toaster } from "sonner";
-import Navbar from "@/components/Navbar";
 import "react-loading-skeleton/dist/skeleton.css";
-import { SocketContextProvider } from "@/context/SocketContext";
+import ClientLayout from "@/components/ClientLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,21 +14,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Check user is login or not
-const CheckAuth = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await axiosInstance.get("/auth/me");
-        dispatch(setAuth(res.data));
-      } catch (err) {
-        console.log("No active session found");
-      }
-    };
-    fetchUser();
-  }, [dispatch]);
-  return null;
+export const metadata: Metadata = {
+  title: "CodeMates | Connect & Code",
+  description: "A social platform for developers to chat and collaborate.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -48,14 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>
-          <CheckAuth />
-          <SocketContextProvider>
-            <Navbar />
-            <main>{children}</main>
-            <Toaster theme="dark" position="top-center" richColors />
-          </SocketContextProvider>
-        </Providers>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

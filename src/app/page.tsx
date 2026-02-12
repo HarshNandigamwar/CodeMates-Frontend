@@ -4,7 +4,6 @@ import axiosInstance from "@/lib/axios";
 import PostCard from "@/components/PostCard";
 import { Users } from "lucide-react";
 import AuthWrapper from "@/components/AuthWrapper";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import HomeFeedSkeleton from "@/components/SkeletonLoders/HomeFeedSkeleton";
 

@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import Link from "next/link";
 import { UserPlus } from "lucide-react";
 
@@ -17,18 +17,13 @@ export default function UserCard({ user }: UserCardProps) {
     <Link
       href={`/profile/${user.username}`}
       className="flex items-center justify-between p-4 bg-[#111111] border border-zinc-800 rounded-xl hover:border-accent/50 transition-all group"
-    //   Redirrecting
-    //   user
-    //   to
-    //   their
-    //   profile
-    //   page
     >
       <div className="flex items-center gap-4">
         {/* Profile Picture */}
         <img
           src={user.profilePic || "https://placehold.co/100x100"}
           alt={user.username}
+          loading="lazy"
           className="w-12 h-12 rounded-full object-cover border border-zinc-700 group-hover:border-accent transition-colors"
         />
 

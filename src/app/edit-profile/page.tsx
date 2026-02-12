@@ -87,7 +87,6 @@ export default function EditProfilePage() {
       await axiosInstance.put("/auth/update-profile", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
       toast.success("Profile updated successfully!");
       router.push(`/profile/${user.username}`);
     } catch (error: any) {
@@ -215,7 +214,7 @@ export default function EditProfilePage() {
               />
             </div>
 
-            {/* Buttons */} 
+            {/* Buttons */}
             <div className="flex gap-4 pt-4">
               <button
                 type="submit"

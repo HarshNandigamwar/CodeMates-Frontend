@@ -12,7 +12,7 @@ export default function HomePage() {
   const router = useRouter();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+  // Fetch home feed
   useEffect(() => {
     const fetchFeed = async () => {
       try {

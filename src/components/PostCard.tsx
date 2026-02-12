@@ -41,6 +41,7 @@ export default function PostCard({ post: initialPost }: PostProps) {
       console.error(error);
     }
   };
+
   // Add Comment on post
   const [commentText, setCommentText] = useState("");
   const [commentLoading, setCommentLoading] = useState(false);
@@ -67,6 +68,7 @@ export default function PostCard({ post: initialPost }: PostProps) {
       setCommentLoading(false);
     }
   };
+
   // Edit Post
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(currentPost.content);
@@ -100,6 +102,7 @@ export default function PostCard({ post: initialPost }: PostProps) {
       setEditLoading(false);
     }
   };
+
   // Delete Post
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;

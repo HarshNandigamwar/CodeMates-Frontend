@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  /* Green Accent Colors */
   --color-accent: #22c55e;
   --color-accent-hover: #16a34a;
 }

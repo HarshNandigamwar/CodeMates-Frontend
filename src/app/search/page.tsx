@@ -9,7 +9,7 @@ export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  // Search logic
+  // Search User
   const handleSearch = async (searchTerm: string) => {
     if (!searchTerm.trim()) {
       setResults([]);

@@ -16,7 +16,7 @@ export const SocketContextProvider = ({
 
   useEffect(() => {
     if (user) {
-      const socketInstance = io("http://localhost:5000", {
+      const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
         query: { userId: user._id },
       });
       setSocket(socketInstance);

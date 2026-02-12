@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Send, Image, Loader2, Smile } from "lucide-react";
+import { Send, Image, Loader2 } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
 
@@ -10,11 +10,12 @@ export default function MessageContainer({ selectedUser }: any) {
   const [messages, setMessages] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom jab naya message aaye
+  // Auto-scroll to bottom
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Send Message
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;

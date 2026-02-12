@@ -200,9 +200,9 @@ export default function PostCard({ post: initialPost }: PostProps) {
                 <button
                   onClick={handleEditPost}
                   disabled={editLoading}
-                  className="flex-1 bg-accent text-black font-bold py-2 rounded-lg text-sm disabled:opacity-50 items-center"
+                  className="flex-1 bg-accent text-black font-bold py-2 rounded-lg text-sm disabled:opacity-50 items-center justify-center text-center "
                 >
-                  {editLoading ? <Loader2 className="animate-spin" /> : "Save"}
+                  {editLoading ? "Saving..." : "Save"}
                 </button>
                 {/* Cancel BUtton */}
                 <button

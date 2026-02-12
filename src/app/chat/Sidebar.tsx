@@ -22,7 +22,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <div className="w-80 border-r border-zinc-800 h-full overflow-y-auto bg-[#0a0a0a]">
+    <div className="md:w-80 border-r border-zinc-800 h-full overflow-y-auto bg-[#0a0a0a]">
       <div className="p-4 border-b border-zinc-800 ">
         <h2 className="text-xl font-bold text-white">Chats</h2>
       </div>

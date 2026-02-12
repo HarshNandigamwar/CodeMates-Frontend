@@ -35,7 +35,7 @@ export default function EditProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const MAX_BIO_LENGTH = 120;
-
+ 
   // States for form
   const [formData, setFormData] = useState({
     name: user?.name || "",

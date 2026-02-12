@@ -19,7 +19,8 @@ export const metadata: Metadata = {
   description: "A social platform for developers to chat and collaborate.",
   manifest: "/manifest.json",
   icons: {
-    apple: "/icon.png",
+    icon: "/icon.png",
+    apple: "/codemates.png",
   },
 };
 

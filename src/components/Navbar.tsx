@@ -31,7 +31,7 @@ export default function Navbar() {
   );
   const dispatch = useDispatch();
 
-  // Logout
+  // Logout user
   const handleLogout = async () => {
     try {
       setLogout(true);

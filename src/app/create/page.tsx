@@ -27,6 +27,7 @@ export default function CreatePost() {
     }
   };
 
+  // Create Post
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() && !file)

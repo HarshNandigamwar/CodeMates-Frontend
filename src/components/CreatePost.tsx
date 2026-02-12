@@ -1,25 +1,21 @@
 "use client";
-import React, { useState } from "react";
-import { Image, Send, Loader2, X } from "lucide-react";
+import { useState } from "react";
+import { Image, Send, Loader2 } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
-import { useAppDispatch } from "@/store/hooks";
-import { fetchPosts } from "@/store/slices/postSlice";
 
 export default function CreatePost() {
   const [content, setContent] = useState("");
   const [isPosting, setIsPosting] = useState(false);
-  const dispatch = useAppDispatch();
 
   const handlePost = async () => {
     if (!content.trim()) return toast.error("Write something first!");
 
     setIsPosting(true);
     try {
-      await axiosInstance.post("/posts", { content }); // backend endpoint check karein
+      await axiosInstance.post("/posts", { content });
       toast.success("Code Deployed to Feed!");
       setContent("");
-      dispatch(fetchPosts()); // Post list refresh karne ke liye
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Post failed");
     } finally {

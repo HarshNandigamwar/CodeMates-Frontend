@@ -8,8 +8,8 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "sonner";
 import Navbar from "@/components/Navbar";
-import 'react-loading-skeleton/dist/skeleton.css';
-
+import "react-loading-skeleton/dist/skeleton.css";
+import { SocketContextProvider } from "@/context/SocketContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,9 +49,11 @@ export default function RootLayout({
       >
         <Providers>
           <CheckAuth />
-          <Navbar />
-          <main >{children}</main>
-          <Toaster theme="dark" richColors />
+          <SocketContextProvider>
+            <Navbar />
+            <main>{children}</main>
+            <Toaster theme="dark" position="top-center" richColors />
+          </SocketContextProvider>
         </Providers>
       </body>
     </html>

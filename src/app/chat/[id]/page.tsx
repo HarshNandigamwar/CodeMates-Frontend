@@ -1,102 +1,100 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
+import { useEffect, useState, useRef, use } from "react";
+import { useSocketContext } from "@/context/SocketContext";
 import axiosInstance from "@/lib/axios";
-import { useSelector } from "react-redux";
-import { Send, Image, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { Send, Loader2 } from "lucide-react";
 
-export default function ChatPage({ params }: { params: { id: string } }) {
-  const receiverId = params.id;
-  const { user: currentUser } = useSelector((state: any) => state.auth);
-
+export default function ChatPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = use(params);
+  const receiverId = resolvedParams.id;
+  const { socket } = useSocketContext();
   const [messages, setMessages] = useState<any[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [socket, setSocket] = useState<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // 1. Socket Setup & Listen
-  useEffect(() => {
-    const newSocket = io("http://localhost:5000", {
-      query: { userId: currentUser?._id },
-    });
-
-    setSocket(newSocket);
-
-    newSocket.on("newMessage", (newMessage: any) => {
-      // Check karein ki message usi user se aaya hai jisse hum chat kar rahe hain
-      if (newMessage.sender === receiverId) {
-        setMessages((prev) => [...prev, newMessage]);
-      }
-    });
-
-    return () => {
-      newSocket.close();
-    };
-  }, [receiverId, currentUser?._id]);
-
-  // 2. Fetch Old Messages
+  //Fetch old message
   useEffect(() => {
     const fetchMessages = async () => {
       try {
         const res = await axiosInstance.get(`/messages/${receiverId}`);
         setMessages(res.data);
-      } catch (error) {
-        console.error("Error fetching messages");
+      } catch (err) {
+        console.error(err);
       }
     };
-    fetchMessages();
+    if (receiverId) fetchMessages();
   }, [receiverId]);
 
-  // 3. Scroll to Bottom
+  // Real-time Message Listen karna
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (!socket) return;
+    socket.on("newMessage", (newMessage: any) => {
+      if (newMessage.sender === receiverId) {
+        setMessages((prev) => [...prev, newMessage]);
+      }
+    });
+    return () => socket.off("newMessage");
+  }, [socket, receiverId]);
 
-  // 4. Send Message
+  // Message Send karna
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
-
     setLoading(true);
     try {
       const res = await axiosInstance.post(`/messages/send/${receiverId}`, {
         text,
       });
-      setMessages((prev) => [...prev, res.data]);
+      setMessages((prev) => [...prev, res.data]); // Local state update
       setText("");
-    } catch (error) {
-      toast.error("Failed to send");
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
+  // Scroll to bottom
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div className="flex flex-col h-screen bg-[#0a0a0a] pt-20 px-4 max-w-4xl mx-auto">
-      <div className="flex-1 bg-[#111111] border border-zinc-800 rounded-t-2xl overflow-y-auto p-4 space-y-4 custom-scrollbar">
-        {messages.map((msg, idx) => {
-          const isMe = msg.sender === currentUser?._id;
+    <div className="flex flex-col h-[90vh] bg-[#0a0a0a] text-white">
+      {/* Messages Window */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((m) => {
+          const isMessageFromMe = m.sender !== receiverId;
           return (
             <div
-              key={idx}
-              className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+              key={m._id}
+              className={`flex ${
+                isMessageFromMe ? "justify-end" : "justify-start"
+              }`}
             >
               <div
-                className={`max-w-[75%] p-3 rounded-2xl text-sm ${
-                  isMe
+                className={`p-3 px-4 rounded-2xl max-w-[75%] text-sm shadow-sm ${
+                  isMessageFromMe
                     ? "bg-accent text-black font-medium rounded-tr-none"
                     : "bg-zinc-800 text-zinc-200 rounded-tl-none"
                 }`}
               >
-                {msg.text}
-                {msg.fileUrl && (
-                  <img
-                    src={msg.fileUrl}
-                    className="mt-2 rounded-lg max-h-60 w-full object-cover"
-                  />
-                )}
+                {m.text}
+                <span
+                  className={`block text-[9px] mt-1 opacity-50 ${
+                    isMessageFromMe ? "text-right" : "text-left"
+                  }`}
+                >
+                  {new Date(m.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
               </div>
             </div>
           );
@@ -104,27 +102,20 @@ export default function ChatPage({ params }: { params: { id: string } }) {
         <div ref={scrollRef} />
       </div>
 
-      {/* Input Area */}
-      <form
-        onSubmit={handleSend}
-        className="p-4 bg-[#111111] border-x border-b border-zinc-800 rounded-b-2xl flex gap-3"
-      >
+      {/* Input */}
+      <form onSubmit={handleSend} className="p-4 bg-zinc-900 flex gap-2">
         <input
-          type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Type a message..."
-          className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent"
+          placeholder="Type something..."
+          className="flex-1 bg-black border border-zinc-700 p-2 rounded-lg outline-none"
         />
         <button
+          type="submit"
           disabled={loading}
-          className="bg-accent text-black p-3 rounded-xl hover:bg-accent-hover transition-all disabled:opacity-50"
+          className="bg-accent p-2 rounded-lg text-black"
         >
-          {loading ? (
-            <Loader2 className="animate-spin" size={20} />
-          ) : (
-            <Send size={20} />
-          )}
+          {loading ? <Loader2 className="animate-spin" /> : <Send />}
         </button>
       </form>
     </div>

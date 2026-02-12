@@ -4,7 +4,7 @@ import axiosInstance from "@/lib/axios";
 import { useDispatch } from "react-redux";
 import { setAuth } from "@/store/slices/authSlice";
 import { toast } from "sonner";
-import { LogIn, Mail, Lock, Code2, Loader, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Code2, Loader, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -23,7 +23,7 @@ export default function LoginPage() {
     try {
       const res = await axiosInstance.post("/auth/login", { email, password });
       dispatch(setAuth(res.data));
-      toast.success("Welcome back to CodeMates!");
+      toast.success("Welcome back to CodeMates");
       router.push("/");
     } catch (error: any) {
       const errorMessage =
@@ -47,7 +47,7 @@ export default function LoginPage() {
             Login to <span className="text-accent">CodeMates</span>
           </h2>
           <p className="mt-2 text-sm text-zinc-400">
-            Welcome back! Please enter your details.
+            Welcome back Please enter your details.
           </p>
         </div>
 
@@ -74,7 +74,7 @@ export default function LoginPage() {
                 <Lock className="h-5 w-5 text-zinc-500" />
               </div>
               <input
-                type={showPassword ? "text" : "password"} // Dynamic type
+                type={showPassword ? "text" : "password"}
                 required
                 className="block w-full pl-10 pr-12 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all sm:text-sm"
                 placeholder="Password"
@@ -82,7 +82,7 @@ export default function LoginPage() {
               />
               {/* Show/Hide Toggle Button */}
               <button
-                type="button" // Ye zaroori hai taaki form submit na ho jaye
+                type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500 hover:text-accent transition-colors cursor-pointer"
               >
@@ -107,16 +107,7 @@ export default function LoginPage() {
               "Sign In"
             )}
           </button>
-          {/* Login with Google */}
-          <button
-            type="submit"
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-black bg-amber-50 transition-all active:scale-95 disabled:opacity-50 cursor-pointer gap-2 items-center"
-          >
-            <LogIn />
-            Continue with Google
-          </button>
         </form>
-
         {/* Footer */}
         <p className="mt-6 text-center text-sm text-zinc-500">
           Don't have an account?{" "}

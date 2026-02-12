@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 export default function AuthWrapper({
   children,
@@ -20,7 +19,6 @@ export default function AuthWrapper({
 
   useEffect(() => {
     if (mounted && !isAuthenticated) {
-      toast.error("Please login to access this page");
       router.push("/login");
     }
   }, [mounted, isAuthenticated, router]);

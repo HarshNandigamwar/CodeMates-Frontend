@@ -65,6 +65,7 @@ export default function SignupPage() {
     return true;
   };
 
+  // Signup User
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -76,7 +77,6 @@ export default function SignupPage() {
           .map((item) => item.trim())
           .filter((item) => item !== ""),
       };
-
       const res = await axiosInstance.post("/auth/signup", finalData);
       dispatch(setAuth(res.data));
       toast.success("Account created!");
@@ -108,7 +108,7 @@ export default function SignupPage() {
             }`}
           ></div>
         </div>
-
+        {/* Signup Form */}
         <form onSubmit={handleSignup} className="space-y-6">
           {step === 1 && (
             <div className="space-y-4 animate-in fade-in duration-500">
@@ -116,6 +116,7 @@ export default function SignupPage() {
                 Basic <span className="text-accent">Details</span>
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Name */}
                 <InputIcon
                   icon={<User size={18} />}
                   name="name"
@@ -124,6 +125,7 @@ export default function SignupPage() {
                   onChange={handleChange}
                   required
                 />
+                {/* Username */}
                 <InputIcon
                   icon={<User size={18} />}
                   name="username"
@@ -132,6 +134,7 @@ export default function SignupPage() {
                   onChange={handleChange}
                   required
                 />
+                {/* Email */}
                 <InputIcon
                   icon={<Mail size={18} />}
                   name="email"
@@ -141,8 +144,7 @@ export default function SignupPage() {
                   onChange={handleChange}
                   required
                 />
-
-                {/* Password Field with Toggle */}
+                {/* Password*/}
                 <div className="relative">
                   <InputIcon
                     icon={<Lock size={18} />}
@@ -153,6 +155,7 @@ export default function SignupPage() {
                     onChange={handleChange}
                     required
                   />
+                  {/* Show/hide password */}
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -163,7 +166,7 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              {/* Bio with character counter */}
+              {/* Bio*/}
               <div className="space-y-1">
                 <textarea
                   name="bio"
@@ -176,7 +179,7 @@ export default function SignupPage() {
                   {formData.bio.length}/150
                 </p>
               </div>
-
+              {/* Next Button */}
               <button
                 type="button"
                 onClick={() => validateStep1() && setStep(2)}
@@ -203,6 +206,7 @@ export default function SignupPage() {
                 Professional <span className="text-accent">Links</span>
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Github LInk */}
                 <InputIcon
                   icon={<Github size={18} />}
                   name="github"
@@ -210,6 +214,7 @@ export default function SignupPage() {
                   value={formData.github}
                   onChange={handleChange}
                 />
+                {/* Linkedin Link */}
                 <InputIcon
                   icon={<Linkedin size={18} />}
                   name="linkedin"
@@ -217,6 +222,7 @@ export default function SignupPage() {
                   value={formData.linkedin}
                   onChange={handleChange}
                 />
+                {/* Portfolio link */}
                 <InputIcon
                   icon={<Globe size={18} />}
                   name="portfolio"
@@ -224,6 +230,7 @@ export default function SignupPage() {
                   value={formData.portfolio}
                   onChange={handleChange}
                 />
+                {/* TechStack */}
                 <InputIcon
                   icon={<Code size={18} />}
                   name="techstack"
@@ -233,6 +240,7 @@ export default function SignupPage() {
                 />
               </div>
               <div className="flex gap-4">
+                {/* Back Button */}
                 <button
                   type="button"
                   onClick={() => setStep(1)}
@@ -240,6 +248,7 @@ export default function SignupPage() {
                 >
                   <ArrowLeft size={18} /> Back
                 </button>
+                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={loading}

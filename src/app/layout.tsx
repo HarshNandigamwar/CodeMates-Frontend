@@ -17,8 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CodeMates | Connect & Code",
   description: "A social platform for developers to chat and collaborate.",
+  manifest: "/manifest.json",
   icons: {
-    icon: "/icon.png",
+    apple: "/icon.png",
   },
 };
 

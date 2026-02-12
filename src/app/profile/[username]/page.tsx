@@ -55,11 +55,9 @@ export default function ProfilePage() {
   const [selectedPost, setSelectedPost] = useState<any>(null);
   const openModal = (post: any) => {
     setSelectedPost(post);
-    // document.body.style.overflow = "hidden";
   };
   const closeModal = () => {
     setSelectedPost(null);
-    // document.body.style.overflow = "auto";
   };
   const handleLikePost = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -124,7 +122,6 @@ export default function ProfilePage() {
       if (editFile) {
         formData.append("url", editFile);
       }
-
       const res = await axiosInstance.put(
         `/posts/edit/${selectedPost._id}`,
         formData,
@@ -132,7 +129,6 @@ export default function ProfilePage() {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
       // Update States
       setSelectedPost(res.data);
       setData((prev: any) => ({
@@ -141,7 +137,6 @@ export default function ProfilePage() {
           p._id === res.data._id ? res.data : p
         ),
       }));
-
       setIsEditing(false);
       setEditFile(null);
       toast.success("Post updated!");
@@ -178,14 +173,11 @@ export default function ProfilePage() {
   useEffect(() => {
     if (data && data.user && currentUser) {
       const followersList = data.user.followers || [];
-
-      // Check karein ki kya followers array mein koi aisa object hai jiski ID meri ID hai
       const following = followersList.some((follower: any) =>
         typeof follower === "string"
           ? follower === currentUser._id
           : follower._id === currentUser._id
       );
-
       setIsFollowing(following);
     }
   }, [data, currentUser]);
@@ -281,7 +273,6 @@ export default function ProfilePage() {
                       <p className="text-zinc-500 text-sm">Followers</p>
                     </div>
                     {/* Following */}
-
                     <div className="text-center ">
                       <span className="font-bold text-lg">
                         {user.followingCount}

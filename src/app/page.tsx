@@ -20,7 +20,6 @@ export default function HomePage() {
         setPosts(res.data);
       } catch (error: any) {
         console.error("Feed Fetch Error:", error);
-        toast.error("Failed to load feed");
       } finally {
         setLoading(false);
       }

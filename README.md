@@ -42,6 +42,6 @@
 - **Real-time:** Socket.io-client
 - **Styling:** Tailwind CSS 4
 - **Icons:** Lucide React
-- **Notifications:** Sonner 
+- **Notifications:** Sonner  
 
 ---

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import HomeFeedSkeleton from "./SkeletonLoders/HomeFeedSkeleton";
 export default function AuthWrapper({
   children,
 }: {
@@ -24,11 +24,7 @@ export default function AuthWrapper({
   }, [mounted, isAuthenticated, router]);
 
   if (!mounted || !isAuthenticated) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-[#0a0a0a]">
-        <div className="h-10 w-10 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <HomeFeedSkeleton />;
   }
 
   return <>{children}</>;

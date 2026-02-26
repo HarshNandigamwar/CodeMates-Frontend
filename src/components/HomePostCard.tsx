@@ -18,7 +18,7 @@ interface PostProps {
   post: any;
 }
 
-export default function PostCard({ post: initialPost }: PostProps) {
+export default function HomePostCard({ post: initialPost }: PostProps) {
   const { user } = useSelector((state: RootState) => state.auth);
   const [showComments, setShowComments] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -129,10 +129,10 @@ export default function PostCard({ post: initialPost }: PostProps) {
             className="w-10 h-10 rounded-full object-cover border border-accent/20"
             alt={currentPost.user.username}
             loading="lazy"
-          /> 
+          />
           <div>
             <p className="text-white font-semibold text-sm">
-              {currentPost.user.name}
+              {currentPost.name}
             </p>
             <p className="text-gray-400 text-xs">{currentPost.user.username}</p>
             <span className="text-zinc-500 text-[10px]">

@@ -59,6 +59,7 @@ export default function ProfilePage() {
   const closeModal = () => {
     setSelectedPost(null);
   };
+  // Like on Post
   const handleLikePost = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!selectedPost) return;
@@ -81,7 +82,6 @@ export default function ProfilePage() {
       console.log(error);
     }
   };
-
   // Add Comment on post
   const [commentText, setCommentText] = useState("");
   const [commentLoading, setCommentLoading] = useState(false);
@@ -97,7 +97,6 @@ export default function ProfilePage() {
       );
       setSelectedPost(res.data);
       setCommentText("");
-      toast.success("Comment added!");
     } catch (error) {
       toast.error("Failed to add comment");
       console.error(error);
@@ -207,7 +206,6 @@ export default function ProfilePage() {
               ),
         },
       }));
-      toast.success(res.data.message);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Something went wrong");
       console.log(error.response?.data?.message);
@@ -215,14 +213,14 @@ export default function ProfilePage() {
       setFollowLoading(false);
     }
   };
-
+  // Loading
   if (loading)
     return (
       <>
         <ProfilePageLoader />
       </>
     );
-
+  // User Not Found
   if (!data)
     return (
       <div className="flex items-center justify-center text-accent font-bold font-mono mt-56 text-center text-2xl md:text-4xl">
@@ -240,7 +238,10 @@ export default function ProfilePage() {
             {/* Profile Picture */}
             <div className="relative h-32 w-32 md:h-44 md:w-44 rounded-2xl overflow-hidden border-4 border-[#0a0a0a] bg-zinc-800 shadow-2xl">
               <img
-                src={user.profilePic || "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"}
+                src={
+                  user.profilePic ||
+                  "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"
+                }
                 loading="lazy"
                 alt={user.name}
                 className="h-full w-full object-cover"

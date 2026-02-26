@@ -23,7 +23,6 @@ export default function LoginPage() {
     try {
       const res = await axiosInstance.post("/auth/login", { email, password });
       dispatch(setAuth(res.data));
-      toast.success("Welcome back to CodeMates");
       router.push("/");
     } catch (error: any) {
       const errorMessage =

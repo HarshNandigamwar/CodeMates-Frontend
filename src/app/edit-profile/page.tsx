@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setAuth } from "@/store/slices/authSlice";
 import {
   Loader2,
   Camera,
@@ -35,7 +37,8 @@ export default function EditProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const MAX_BIO_LENGTH = 120;
- 
+  const dispatch = useDispatch();
+
   // States for form
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -84,10 +87,10 @@ export default function EditProfilePage() {
       if (formData.password) data.append("password", formData.password);
       if (profilePic) data.append("profilePic", profilePic);
 
-      await axiosInstance.put("/auth/update-profile", data, {
+      const res = await axiosInstance.put("/auth/update-profile", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("Profile updated successfully!");
+      dispatch(setAuth(res.data));
       router.push(`/profile/${user.username}`);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to update profile");
@@ -111,7 +114,10 @@ export default function EditProfilePage() {
             <div className="flex flex-col items-center mb-6">
               <div className="relative group">
                 <img
-                  src={previewUrl || "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"}
+                  src={
+                    previewUrl ||
+                    "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"
+                  }
                   className="w-32 h-32 rounded-2xl object-cover border-4 border-zinc-800"
                   alt="Profile Preview"
                 />

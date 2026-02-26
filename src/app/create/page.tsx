@@ -78,13 +78,16 @@ export default function CreatePost() {
             {/* User Info */}
             <div className="flex items-center gap-3 mb-2">
               <img
-                src={user?.profilePic || "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"}
+                src={
+                  user?.profilePic ||
+                  "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"
+                }
                 loading="lazy"
                 className="w-10 h-10 rounded-full border border-zinc-800 object-cover"
                 alt="profile"
               />
               <span className="text-sm font-semibold text-zinc-300">
-                {user?.username}
+                {user?.name}
               </span>
             </div>
 

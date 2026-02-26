@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios";
-import PostCard from "@/components/PostCard";
+import HomePostCard from "@/components/HomePostCard"
 import { Users } from "lucide-react";
 import AuthWrapper from "@/components/AuthWrapper";
 import { useRouter } from "next/navigation";
@@ -25,6 +25,8 @@ export default function HomePage() {
     };
     fetchFeed();
   }, []);
+// console.log(posts);
+
 
   return (
     <AuthWrapper>
@@ -36,7 +38,7 @@ export default function HomePage() {
           ) : posts.length > 0 ? (
             <div className="flex flex-col gap-8">
               {posts.map((post) => (
-                <PostCard key={post._id} post={post} />
+                <HomePostCard key={post._id} post={post} />
               ))}
             </div>
           ) : (

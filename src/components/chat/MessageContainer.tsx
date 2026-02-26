@@ -42,7 +42,7 @@ export default function MessageContainer({ selectedUser }: any) {
       {/* Chat Header */}
       <div className="p-4 border-b border-zinc-800 bg-zinc-900/50 flex items-center gap-3">
         <img
-          src={selectedUser.profilePic}
+          src={selectedUser.profilePic || "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"}
           className="w-10 h-10 rounded-full border border-accent/20"
         />
         <div>

@@ -240,7 +240,7 @@ export default function ProfilePage() {
             {/* Profile Picture */}
             <div className="relative h-32 w-32 md:h-44 md:w-44 rounded-2xl overflow-hidden border-4 border-[#0a0a0a] bg-zinc-800 shadow-2xl">
               <img
-                src={user.profilePic || "https://placehold.co/200x200"}
+                src={user.profilePic || "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"}
                 loading="lazy"
                 alt={user.name}
                 className="h-full w-full object-cover"
@@ -460,7 +460,7 @@ export default function ProfilePage() {
                                       <img
                                         src={
                                           selectedPost.user.profilePic ||
-                                          "https://placehold.co/100x100"
+                                          "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"
                                         }
                                         loading="lazy"
                                         className="w-8 h-8 rounded-full border border-accent/30"
@@ -571,7 +571,7 @@ export default function ProfilePage() {
                                                     <img
                                                       src={
                                                         comment.profilePic ||
-                                                        "https://placehold.co/100x100"
+                                                        "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"
                                                       }
                                                       loading="lazy"
                                                       className="w-full h-full object-cover"

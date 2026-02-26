@@ -21,7 +21,7 @@ export default function UserCard({ user }: UserCardProps) {
       <div className="flex items-center gap-4">
         {/* Profile Picture */}
         <img
-          src={user.profilePic || "https://placehold.co/100x100"}
+          src={user.profilePic || "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"}
           alt={user.username}
           loading="lazy"
           className="w-12 h-12 rounded-full object-cover border border-zinc-700 group-hover:border-accent transition-colors"

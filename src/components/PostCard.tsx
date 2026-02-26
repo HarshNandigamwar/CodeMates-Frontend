@@ -122,7 +122,10 @@ export default function PostCard({ post: initialPost }: PostProps) {
         {/* ProfilePic And name */}
         <div className="flex items-center gap-3">
           <img
-            src={currentPost.user.profilePic || "https://placehold.co/100x100"}
+            src={
+              currentPost.user.profilePic ||
+              "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"
+            }
             className="w-10 h-10 rounded-full object-cover border border-accent/20"
             alt={currentPost.user.username}
             loading="lazy"
@@ -286,7 +289,10 @@ export default function PostCard({ post: initialPost }: PostProps) {
               currentPost.comments.map((comment: any) => (
                 <div key={comment._id} className="flex gap-3 items-start">
                   <img
-                    src={comment.profilePic || "https://placehold.co/100x100"}
+                    src={
+                      comment.profilePic ||
+                      "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"
+                    }
                     loading="lazy"
                     className="w-7 h-7 rounded-full object-cover"
                   />

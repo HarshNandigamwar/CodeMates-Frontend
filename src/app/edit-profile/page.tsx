@@ -111,7 +111,7 @@ export default function EditProfilePage() {
             <div className="flex flex-col items-center mb-6">
               <div className="relative group">
                 <img
-                  src={previewUrl || "https://placehold.co/200x200"}
+                  src={previewUrl || "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"}
                   className="w-32 h-32 rounded-2xl object-cover border-4 border-zinc-800"
                   alt="Profile Preview"
                 />

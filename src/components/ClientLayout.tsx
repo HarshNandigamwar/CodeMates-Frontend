@@ -47,7 +47,7 @@ if (process.env.NODE_ENV === "production") {
   const separator = "%c" + "─".repeat(45);
   const separatorStyle = "color: #27272a;";
 
-  console.log("%c🚀 CODEMATES · DEV_CONSOLE", headerStyle);
+  console.log("%c🚀 WELLCOME TO CODEMATES DEV_CONSOLE", headerStyle);
   console.log("%c%s", subStyle, `BY ${info.developer.toUpperCase()}`);
 
   console.log(separator, separatorStyle);

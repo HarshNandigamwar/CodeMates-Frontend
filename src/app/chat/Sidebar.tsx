@@ -39,7 +39,7 @@ export default function Sidebar() {
               {/* User Image */}
               <div className="relative">
                 <img
-                  src={user.profilePic}
+                  src={user.profilePic || "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"}
                   loading="lazy"
                   className="w-12 h-12 rounded-full object-cover"
                 />

@@ -25,8 +25,6 @@ export default function HomePage() {
     };
     fetchFeed();
   }, []);
-// console.log(posts);
-
 
   return (
     <AuthWrapper>

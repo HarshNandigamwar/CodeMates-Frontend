@@ -13,8 +13,8 @@ if (process.env.NODE_ENV === "production") {
   const info = {
     name: "CodeMates",
     developer: "Shriharsh Nandigamwar",
-    version: "1.0.0",
-    tech: "Next.js 15 · Tailwind · Socket.io",
+    version: "1.2.0",
+    tech: "Next.js · Tailwind · Socket.io · Redux Toolkit",
     github: "https://github.com/HarshNandigamwar",
     note: "Happy Coding! 🚀 Build something great together.",
   };
@@ -53,7 +53,7 @@ if (process.env.NODE_ENV === "production") {
   console.log(separator, separatorStyle);
 
   console.log("%c[Main Dev]  %c%s", labelStyle, valueStyle, info.developer);
-  console.log("%c[Tech Stack]%c%s", labelStyle, valueStyle, info.tech);
+  console.log("%c[Tech Stack] %c%s", labelStyle, valueStyle, info.tech);
   console.log("%c[GitHub]    %c%s", labelStyle, valueStyle, info.github);
   console.log("%c[Version]   %c%s", labelStyle, valueStyle, info.version);
 

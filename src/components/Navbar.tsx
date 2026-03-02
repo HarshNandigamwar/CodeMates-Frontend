@@ -30,21 +30,21 @@ export default function Navbar() {
     (state: RootState) => state.auth
   );
   const dispatch = useDispatch();
-
-  // Logout user
+  // Logout
   const handleLogout = async () => {
     try {
       setLogout(true);
+      let res = await axiosInstance.post("/auth/logout");
       dispatch(logoutRedux());
-      toast.success("Logged out successfully");
-      await axiosInstance.post("/auth/logout");
+      toast.success(res.data.message);
+      router.push("/login");
     } catch (error) {
-      console.warn(
-        "Server-side logout failed (probably offline), but local session cleared."
-      );
+      console.error("Logout failed", error);
+      dispatch(logoutRedux());
+      router.push("/login");
     } finally {
       setLogout(false);
-      router.push("/login");
+      setIsOpen(false);
     }
   };
 
@@ -175,7 +175,6 @@ export default function Navbar() {
               <button
                 onClick={() => {
                   handleLogout();
-                  setIsOpen(false);
                 }}
                 title="Logout"
                 disabled={logout}

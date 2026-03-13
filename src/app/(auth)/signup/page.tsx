@@ -39,7 +39,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     if (name === "bio" && value.length > 120) return;

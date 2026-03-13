@@ -28,9 +28,11 @@ export default function PostCard({ post: initialPost }: PostProps) {
 
   // Add like on post
   const isLiked = currentPost.likes.includes(user?._id);
+  const [LikeLoader, setLikeLoader] = useState(false);
   const handleLike = async () => {
     if (!user) return toast.error("Please login to like");
     try {
+      setLikeLoader(true);
       const res = await axiosInstance.put(`/posts/like/${currentPost._id}`);
       setCurrentPost({
         ...res.data,
@@ -39,6 +41,9 @@ export default function PostCard({ post: initialPost }: PostProps) {
     } catch (error: any) {
       toast.error("Error updating like");
       console.error(error);
+      setLikeLoader(false);
+    } finally {
+      setLikeLoader(false);
     }
   };
 
@@ -53,7 +58,7 @@ export default function PostCard({ post: initialPost }: PostProps) {
         `/posts/comment/${currentPost._id}`,
         {
           text: commentText,
-        }
+        },
       );
       setCurrentPost({
         ...res.data,
@@ -87,7 +92,7 @@ export default function PostCard({ post: initialPost }: PostProps) {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
       setCurrentPost({
         ...res.data,
@@ -129,14 +134,20 @@ export default function PostCard({ post: initialPost }: PostProps) {
             className="w-10 h-10 rounded-full object-cover border border-accent/20"
             alt={currentPost.user.username}
             loading="lazy"
-          /> 
+          />
           <div>
             <p className="text-white font-semibold text-sm">
               {currentPost.user.name}
             </p>
             <p className="text-gray-400 text-xs">{currentPost.user.username}</p>
             <span className="text-zinc-500 text-[10px]">
-              {new Date(currentPost.createdAt).toLocaleString()}
+              {new Date(currentPost.createdAt).toLocaleString([], {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </span>
           </div>
         </div>
@@ -253,14 +264,19 @@ export default function PostCard({ post: initialPost }: PostProps) {
           onClick={handleLike}
           className="flex items-center gap-2 transition-all active:scale-125 cursor-pointer"
         >
-          <Heart
-            size={22}
-            className={`transition-colors ${
-              isLiked
-                ? "fill-red-500 text-red-500"
-                : "text-zinc-400 hover:text-red-400"
-            }`}
-          />
+          {LikeLoader ? (
+            <Loader2 size={22} className="animate-spin" />
+          ) : (
+            <Heart
+              size={22}
+              className={`transition-colors ${
+                isLiked
+                  ? "fill-red-500 text-red-500"
+                  : "text-zinc-400 hover:text-red-400"
+              }`}
+            />
+          )}
+
           <span
             className={`text-xs font-medium ${
               isLiked ? "text-red-500" : "text-zinc-400"

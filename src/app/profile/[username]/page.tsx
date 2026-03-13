@@ -60,10 +60,12 @@ export default function ProfilePage() {
     setSelectedPost(null);
   };
   // Like on Post
+  const [LikeLoader, setLikeLoader] = useState(false);
   const handleLikePost = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!selectedPost) return;
     try {
+      setLikeLoader(true);
       const res = await axiosInstance.put(`/posts/like/${selectedPost._id}`);
       const updatedPost = res.data;
       const finalPostData = {
@@ -74,12 +76,15 @@ export default function ProfilePage() {
       setData((prev: any) => ({
         ...prev,
         posts: prev.posts.map((p: any) =>
-          p._id === updatedPost._id ? finalPostData : p
+          p._id === updatedPost._id ? finalPostData : p,
         ),
       }));
     } catch (error) {
       toast.error("Failed to like post");
       console.log(error);
+      setLikeLoader(false);
+    } finally {
+      setLikeLoader(false);
     }
   };
   // Add Comment on post
@@ -93,7 +98,7 @@ export default function ProfilePage() {
         `/posts/comment/${selectedPost._id}`,
         {
           text: commentText,
-        }
+        },
       );
       setSelectedPost(res.data);
       setCommentText("");
@@ -126,14 +131,14 @@ export default function ProfilePage() {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-        }
+        },
       );
       // Update States
       setSelectedPost(res.data);
       setData((prev: any) => ({
         ...prev,
         posts: prev.posts.map((p: any) =>
-          p._id === res.data._id ? res.data : p
+          p._id === res.data._id ? res.data : p,
         ),
       }));
       setIsEditing(false);
@@ -175,7 +180,7 @@ export default function ProfilePage() {
       const following = followersList.some((follower: any) =>
         typeof follower === "string"
           ? follower === currentUser._id
-          : follower._id === currentUser._id
+          : follower._id === currentUser._id,
       );
       setIsFollowing(following);
     }
@@ -202,7 +207,7 @@ export default function ProfilePage() {
             : (prev.user.followers || []).filter((f: any) =>
                 typeof f === "string"
                   ? f !== currentUser._id
-                  : f._id !== currentUser._id
+                  : f._id !== currentUser._id,
               ),
         },
       }));
@@ -490,7 +495,7 @@ export default function ProfilePage() {
                                             <button
                                               onClick={() =>
                                                 handleDeleteModalPost(
-                                                  selectedPost._id
+                                                  selectedPost._id,
                                                 )
                                               }
                                               className="text-zinc-400 hover:text-red-500 p-1 cursor-pointer"
@@ -523,7 +528,7 @@ export default function ProfilePage() {
                                           type="file"
                                           onChange={(e) =>
                                             setEditFile(
-                                              e.target.files?.[0] || null
+                                              e.target.files?.[0] || null,
                                             )
                                           }
                                           className="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:bg-accent/10 file:text-accent hover:file:bg-accent/20 cursor-pointer"
@@ -587,7 +592,7 @@ export default function ProfilePage() {
                                                     </p>
                                                   </div>
                                                 </div>
-                                              )
+                                              ),
                                             )
                                           ) : (
                                             <div className="flex flex-col items-center justify-center py-10 text-center">
@@ -618,16 +623,23 @@ export default function ProfilePage() {
                                         onClick={handleLikePost}
                                         className="hover:scale-110 active:scale-125 transition-all cursor-pointer"
                                       >
-                                        <Heart
-                                          size={24}
-                                          className={
-                                            selectedPost.likes?.includes(
-                                              currentUser?._id
-                                            )
-                                              ? "fill-red-500 text-red-500"
-                                              : "text-zinc-400 hover:text-red-400"
-                                          }
-                                        />
+                                        {LikeLoader ? (
+                                          <Loader2
+                                            size={24}
+                                            className="animate-spin"
+                                          />
+                                        ) : (
+                                          <Heart
+                                            size={24}
+                                            className={
+                                              selectedPost.likes?.includes(
+                                                currentUser?._id,
+                                              )
+                                                ? "fill-red-500 text-red-500"
+                                                : "text-zinc-400 hover:text-red-400"
+                                            }
+                                          />
+                                        )}
                                       </button>
                                       <p className="text-xs font-bold text-zinc-300">
                                         {selectedPost.likes?.length || 0} likes

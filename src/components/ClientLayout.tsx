@@ -62,7 +62,7 @@ if (process.env.NODE_ENV === "production") {
   console.log(
     "%c%s",
     "font-size: 12px; color: #71717a; font-style: italic;",
-    info.note
+    info.note,
   );
 }
 
@@ -74,7 +74,7 @@ const CheckAuth = () => {
         const res = await axiosInstance.get("/auth/me");
         dispatch(setAuth(res.data));
       } catch (err) {
-        console.log("No active session found");
+        console.log("No active session found", err);
       }
     };
     fetchUser();

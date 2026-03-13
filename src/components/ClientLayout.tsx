@@ -74,7 +74,7 @@ const CheckAuth = () => {
         const res = await axiosInstance.get("/auth/me");
         dispatch(setAuth(res.data));
       } catch (err) {
-        console.log("No active session found", err);
+        console.log("No active session found Plz Login", err);
       }
     };
     fetchUser();

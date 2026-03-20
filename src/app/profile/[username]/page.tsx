@@ -296,24 +296,34 @@ export default function ProfilePage() {
                     <Edit3 size={18} /> Edit Profile
                   </button>
                 ) : (
-                  //  Follow/Unfollow Button
-                  <button
-                    onClick={handleFollowToggle}
-                    disabled={followLoading}
-                    className={`px-8 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                      isFollowing
-                        ? "bg-zinc-800 text-white border border-zinc-700 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50"
-                        : "bg-accent text-black hover:opacity-90"
-                    }`}
-                  >
-                    {followLoading ? (
-                      <Loader2 className="animate-spin" size={18} />
-                    ) : isFollowing ? (
-                      "Unfollow"
-                    ) : (
-                      "Follow"
-                    )}
-                  </button>
+                  // Chat Button & Follow Button
+                  <span className=" flex gap-3 md:gap-2 items-center justify-center">
+                    {/* Follow/Unfollow Button */}
+                    <button
+                      onClick={handleFollowToggle}
+                      disabled={followLoading}
+                      className={`px-8 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        isFollowing
+                          ? "bg-zinc-800 text-white border border-zinc-700 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50"
+                          : "bg-accent text-black hover:opacity-90"
+                      }`}
+                    >
+                      {followLoading ? (
+                        <Loader2 className="animate-spin" size={18} />
+                      ) : isFollowing ? (
+                        "Unfollow"
+                      ) : (
+                        "Follow"
+                      )}
+                    </button>
+                    {/* Chat Button */}
+                    <a
+                      className="px-8 py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-2 cursor-pointer bg-accent text-black hover:opacity-90 "
+                      href={`/chat/${user._id}`}
+                    >
+                      Message
+                    </a>
+                  </span>
                 )}
               </div>
             </div>

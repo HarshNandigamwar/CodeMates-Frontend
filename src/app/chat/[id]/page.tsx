@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState, useRef, use } from "react";
+import { useParams } from "next/navigation";
 import { useSocketContext } from "@/context/SocketContext";
 import axiosInstance from "@/lib/axios";
-import { Send, Loader2, MessageSquareQuote } from "lucide-react";
+import { Send, Loader2, MessageSquareQuote, ArrowDown } from "lucide-react";
 import MessageSkeleton from "@/components/SkeletonLoders/MessageSkeleton";
 
 export default function ChatPage({
@@ -18,6 +19,21 @@ export default function ChatPage({
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Fetch user
+  const [userData, setUserData] = useState<any>({});
+  const id = useParams();
+  const fetchUser = async () => {
+    try {
+      const res = await axiosInstance.get(`/auth/searchbyid/${id.id}`);
+      setUserData(res.data);
+    } catch (error) {
+      console.error("Search error:", error);
+    }
+  };
+  useEffect(() => {
+    if (id) fetchUser();
+  }, [id]);
 
   // Fetch old Message
   useEffect(() => {
@@ -46,6 +62,7 @@ export default function ChatPage({
     return () => socket.off("newMessage");
   }, [socket, receiverId]);
 
+  // Send message
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
@@ -63,12 +80,41 @@ export default function ChatPage({
     }
   };
 
+  // Scroll to latest message
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Go back 1 page
+  const handleGoBack = (): void => {
+    window.history.back();
+  };
+
   return (
     <div className="flex flex-col h-[90vh] bg-[#0a0a0a] text-white">
+      {/* Header */}
+      <div className="w-full p-3 pl-3 flex items-center gap-3">
+        {/* Back Arrow */}
+        <div title="back" onClick={handleGoBack}>
+          <ArrowDown
+            size={24}
+            className="block md:hidden rotate-90 text-accent"
+          />
+        </div>
+        {/* user image */}
+        <img
+          src={
+            userData.profilePic ||
+            "https://res.cloudinary.com/darmatnf2/image/upload/v1772109026/user_pic_taeqah.png"
+          }
+          alt={userData.name}
+          loading="lazy"
+          className="w-12 h-12 rounded-full object-cover"
+        />
+        {/* Name */}
+        <p className="text-xl font-bold text-white">{userData.name}</p>
+      </div>
+
       {/* Messages Window */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {initialLoading ? (

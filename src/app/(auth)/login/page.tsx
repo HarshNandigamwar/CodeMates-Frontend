@@ -4,7 +4,7 @@ import axiosInstance from "@/lib/axios";
 import { useDispatch } from "react-redux";
 import { setAuth } from "@/store/slices/authSlice";
 import { toast } from "sonner";
-import { Mail, Lock, Code2, Loader, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Code2, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -101,7 +101,7 @@ export default function LoginPage() {
             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-black bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-all active:scale-95 disabled:opacity-50 cursor-pointer items-center"
           >
             {loading ? (
-              <Loader className="animate-spin text-white" />
+              <Loader2 className="animate-spin text-white" />
             ) : (
               "Sign In"
             )}
